@@ -164,3 +164,8 @@ SOCIAL_AUTH_KEYCLOAK_EXTRA_DATA=[("refresh_token","refresh_token")]
 SOCIAL_AUTH_REDIRECT_IS_HTTPS = True
 
 LOGIN_REDIRECT_URL = '/'
+
+# DateTime settings
+DATETIME_FORMAT = "Y-m-d H:M:S"
+TIME_FORMAT = "H:M:S"
+SHORT_DATETIME_FORMAT = "m/d/Y H:M:S"
