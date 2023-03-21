@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}Crews{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Crews</h1>
+</div>
+
+<table class="table align-middle">
+    <thead>
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">Crew</th>
+        <th scope="col">Number of members</th>
+        <th scope="col">Members with assigned timeslot</th>
+        <th scope="col">Percentage of members with assigned tasks</th>
+        <th scope="col"></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for crew in crews %}
+      <tr>
+        <th scope="row">{{ crew.id }}</th>
+        <td>{{ crew.name }}</td>
+        <td>{{ crew.num_users }}</td>
+        <td>{{ crew.num_users_assigned }}</td>
+        <td>{{ crew.percentage_users_with_assigned_timeslot }} %</td>
+        <td><a href="/crew/{{ crew.id }}" type="button" class="btn btn-primary btn-sm">Edit</a></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+
+{%endblock%}

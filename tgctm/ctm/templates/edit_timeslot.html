@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% load django_bootstrap5 %}
+
+{% block title %}Timeslot {{ timeslot.id }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Timeslot {{ timeslot.id }} for task {{ timeslot.task.name }}</h1>
+    <div>
+        <a href="/timeslot/{{ timeslot.id}}/attendance" class="btn btn-sm btn-warning">Register attendance for this timeslot</a>
+        <a href="/timeslots_crew/{{ timeslot.id}}/add" class="btn btn-sm btn-info">Assign user to this timeslot</a>
+        <a href="/timeslots_crew/{{ timeslot.id}}" class="btn btn-sm btn-success">Show crews assigned to this timeslot</a>
+        <a href="/timeslots" class="btn btn-sm btn-danger">Back</a>
+    </div>
+</div>
+
+<div class="d-flex justify-content-start flex-wrap pt-3 pb-2 mb-3">
+  <div class="card text-center m-2 bg-primary" style="width: 18rem;">
+    <div class="card-body">
+      <p class="card-text text-white fs-3">Max participants:<br/>{{ timeslot.max_participants }}</p>
+    </div>
+  </div>
+  <div class="card text-center m-2 bg-success " style="width: 18rem;">
+    <div class="card-body">
+      <p class="card-text text-white fs-3">Attendance:<br/>{{ timeslot.num_assiged_users_checked_in }} / {{ timeslot.num_assigned_users }}</p>
+    </div>
+  </div>
+  
+  
+</div>
+
+<form method="post" class="form">
+    {% csrf_token %}
+  
+    {% bootstrap_form form %}
+  
+    {% bootstrap_button button_type="submit" content="Save" %}
+    {% bootstrap_button button_type="reset" content="Cancel" %}
+      
+  </form>
+
+
+<div class="d-flex flex-column pt-3 align-self-end pb-2 mb-3 border-bottom">
+    <h1 class="h2">Allocated users for timeslot {{ timeslot.id }}</h1>
+    <p class="lead py-1">Start: <b>{{ timeslot.starts }}</b> - Ends: <b>{{ timeslot.ends }}</b></p>
+</div>
+
+<table class="table align-middle">
+    <thead>
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">User</th>
+        <th scope="col">Registered attendance</th>
+        <th scope="col"></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for timeslot_user in timeslot_users %}
+      <tr>
+        <th scope="row">{{ timeslot_user.id }}</th>
+        <td>{{ timeslot_user.user.first_name }} {{ timeslot_user.user.last_name }}</td>
+        <td>{%if timeslot_user.attendance %}<span class="text-success">Yes ({{timeslot_user.attendance.created_on}})  (<a href="/timeslot/{{ timeslot.id }}/attendance/{{timeslot_user.attendance.id}}">edit</a>)</span>{% else %}<span class="text-danger">No</span>{%endif%}</td>
+        <td>{%if not timeslot_user.attendance %}<a href="/timeslot/{{ timeslot.id }}/attendance/new/{{timeslot_user.user.id}}" class="btn btn-sm btn-info">Register attendance</a>{% endif %}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+
+{%endblock%}

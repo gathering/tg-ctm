@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% load django_bootstrap5 %}
+
+{% block title %}Crew{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Crew</h1>
+</div>
+
+<form method="post" class="form">
+    {% csrf_token %}
+  
+    {% bootstrap_form form %}
+  
+    {% bootstrap_button button_type="submit" content="Save" %}
+    {% bootstrap_button button_type="reset" content="Cancel" %}
+      
+  </form>
+
+{%endblock%}

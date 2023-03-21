@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}Timeslots {%if task.name %}for task {{ task.name }}{%endif%} {% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Timeslots {%if task.name %}for task {{ task.name }}{%endif%}</h1>
+</div>
+
+<table class="table align-middle">
+    <thead>
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">Task</th>
+        <th scope="col">Starts</th>
+        <th scope="col">Ends</th>
+        <th scope="col">Max participants</th>
+        <th scope="col">Attendance</th>
+        <th scope="col"></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for timeslot in timeslots %}
+      <tr>
+        <th scope="row">{{ timeslot.id }}</th>
+        <td>{{ timeslot.task.name }}</td>
+        <td>{{ timeslot.starts }}</td>
+        <td>{{ timeslot.ends }}</td>
+        <td>{{ timeslot.max_participants }}</td>
+        <td>{{ timeslot.num_assiged_users_checked_in }} / {{ timeslot.num_assigned_users }} </td>
+        <td><a href="/timeslot/{{ timeslot.id }}" type="button" class="btn btn-primary btn-sm">Edit</a></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+
+{%endblock%}

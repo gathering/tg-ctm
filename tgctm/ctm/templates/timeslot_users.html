@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}Allocated crews for timeslot {{ timeslot.id }} {% endblock %}
+
+{% block content %}
+<div class="d-flex flex-column pt-3 align-self-end pb-2 mb-3 border-bottom">
+    <h1 class="h2">Allocated users for timeslot {{ timeslot.id }}</h1>
+    <p class="lead py-1">Start: <b>{{ timeslot.starts }}</b> - Ends: <b>{{ timeslot.ends }}</b></p>
+</div>
+
+<table class="table align-middle">
+    <thead>
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">User</th>
+        <th scope="col"></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for timeslot_user in timeslot_users %}
+      <tr>
+        <th scope="row">{{ timeslot_user.id }}</th>
+        <td>{{ timeslot_user.user.first_name }} {{ timeslot_user.user.last_name }}</td>
+        <td></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <a href="/timeslot/{{timeslot.id}}" class="btn btn-sm btn-danger">Back</a>
+{%endblock%}
