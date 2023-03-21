@@ -92,6 +92,7 @@
               Dashboard
             </a>
           </li>
+          {% if user.is_staff %}
           <li class="nav-item">
             <a class="nav-link" aria-current="page" href="/tasks">
               <span data-feather="home" class="align-text-bottom"></span>
@@ -116,7 +117,7 @@
               Users
             </a>
           </li>
-          
+          {%endif%}
           {% if user.is_superuser %}
           <li class="nav-item">
             <a class="nav-link" href="/admin">

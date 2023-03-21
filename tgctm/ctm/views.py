@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
+from django.contrib.admin.views.decorators import staff_member_required
 
 from .models import *
 from .forms import *
@@ -13,12 +14,14 @@ def index(request):
     return render(request, 'index.html')
 
 @login_required
+@staff_member_required
 def view_tasks(request):
     tasks = Task.objects.all()
     context = {"tasks": tasks}
     return render(request, 'tasks.html', context)
 
 @login_required
+@staff_member_required
 def edit_task(request, task_id):
     task = Task.objects.get(id=task_id)
     form = TaskForm(request.POST or None, instance=task)
@@ -29,12 +32,14 @@ def edit_task(request, task_id):
     return render(request, 'edit_task.html', context)
 
 @login_required
+@staff_member_required
 def view_timeslots(request):
     timeslots = TaskTimeSlot.objects.all().order_by("starts")
     context = {"timeslots": timeslots}
     return render(request, 'timeslots.html', context)
 
 @login_required
+@staff_member_required
 def edit_timeslot(request, timeslot_id):
     timeslot = TaskTimeSlot.objects.get(id=timeslot_id)
     form = TaskTimeSlotForm(request.POST or None, instance=timeslot)
@@ -46,6 +51,7 @@ def edit_timeslot(request, timeslot_id):
     return render(request, 'edit_timeslot.html', context)
 
 @login_required
+@staff_member_required
 def new_timeslot(request):
     form = TaskTimeSlotForm(request.POST or None)
     if form.is_valid():
@@ -55,6 +61,7 @@ def new_timeslot(request):
     return render(request, 'edit_timeslot.html', context)
 
 @login_required
+@staff_member_required
 def edit_timeslot_attendance(request, timeslot_id, timeslot_attendance_id):
     timeslot = TaskTimeSlot.objects.get(id=timeslot_id)
     timeslot_attendance = CheckInUserTaskTimeSlot.objects.get(id=timeslot_attendance_id)
@@ -68,12 +75,14 @@ def edit_timeslot_attendance(request, timeslot_id, timeslot_attendance_id):
     return render(request, 'edit_register_attendance.html', context)
 
 @login_required
+@staff_member_required
 def delete_timeslot_attendance(request, timeslot_id, timeslot_attendance_id):
     timeslot_attendance = CheckInUserTaskTimeSlot.objects.get(id=timeslot_attendance_id)
     timeslot_attendance.delete()
     return redirect("/timeslot/" + str(timeslot_id))
 
 @login_required
+@staff_member_required
 def new_timeslot_attendance(request, timeslot_id, user_id):
     timeslot = TaskTimeSlot.objects.get(id=timeslot_id)
     User = get_user_model()
@@ -88,6 +97,7 @@ def new_timeslot_attendance(request, timeslot_id, user_id):
     return render(request, 'edit_register_attendance.html', context)
 
 @login_required
+@staff_member_required
 def view_timeslots_tasks(request, task_id):
     task = Task.objects.get(id=task_id)
     timeslots = TaskTimeSlot.objects.filter(task=task_id).order_by("starts")
@@ -95,6 +105,7 @@ def view_timeslots_tasks(request, task_id):
     return render(request, 'timeslots.html', context)
 
 @login_required
+@staff_member_required
 def view_timeslot_task_crew(request, timeslot_id):
     timeslot = TaskTimeSlot.objects.get(id=timeslot_id)
     timeslot_users = TaskTimeSlotUser.objects.filter(timeslot=timeslot_id)
@@ -102,6 +113,7 @@ def view_timeslot_task_crew(request, timeslot_id):
     return render(request, 'timeslot_users.html', context)
 
 @login_required
+@staff_member_required
 def new_timeslot_task_crew(request, timeslot_id):
     timeslot = TaskTimeSlot.objects.get(id=timeslot_id)
     form = TaskTimeSlotUserForm(request.POST or None, initial={"timeslot": timeslot})
@@ -114,12 +126,14 @@ def new_timeslot_task_crew(request, timeslot_id):
     return render(request, 'new_timeslot_user.html', context)
 
 @login_required
+@staff_member_required
 def view_crews(request):
     crews = Crew.objects.all()
     context = {"crews": crews}
     return render(request, "crews.html", context)
 
 @login_required
+@staff_member_required
 def edit_crew(request, crew_id):
     crew = Crew.objects.get(id=crew_id)
     form = CrewForm(request.POST or None, instance=crew)
@@ -132,6 +146,7 @@ def edit_crew(request, crew_id):
     return render(request, 'edit_crew.html', context)
 
 @login_required
+@staff_member_required
 def view_users(request):
     User = get_user_model()
     users = User.objects.filter(profile__isnull=False)
@@ -139,6 +154,7 @@ def view_users(request):
     return render(request, "users.html", context)
 
 @login_required
+@staff_member_required
 def register_attendance(request, timeslot_id):
     form = RegisterAttendanceForm()
     timeslot = TaskTimeSlot.objects.get(id=timeslot_id)
