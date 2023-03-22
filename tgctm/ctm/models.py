@@ -70,6 +70,7 @@ class Crew(models.Model):
 class CrewUser(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     crew = models.ForeignKey(Crew, on_delete=models.CASCADE)
+    is_chief = models.BooleanField(default=False)
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True)
 

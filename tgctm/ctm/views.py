@@ -136,15 +136,21 @@ def new_timeslot_task_crew_search(request, timeslot_id):
     timeslots = TaskTimeSlot.objects.all()
     User = get_user_model()
     users = User.objects.all()
+    context = {"timeslots": timeslots, "cur_timeslot": timeslot, "users": users}
 
     if request.POST:
         user = User.objects.get(id=request.POST.get('id_user'))
         timeslot = TaskTimeSlot.objects.get(id=request.POST.get('id_timeslot'))
+        
+        if TaskTimeSlotUser.objects.filter(user=user, timeslot=timeslot).exists():
+            context = {"timeslots": timeslots, "cur_timeslot": timeslot, "users": users, "alerts": [{"text": "Duplicate attendance!", "color": "warning"}]}
+            return render(request, 'new_timeslot_user_search.html', context)
+        
         timeslot_user = TaskTimeSlotUser(user=user, timeslot=timeslot)
         timeslot_user.save()
         return redirect("/timeslots_user/" + str(timeslot.id) + "/addsearch")
     
-    context = {"timeslots": timeslots, "cur_timeslot": timeslot, "users": users}
+    
     return render(request, 'new_timeslot_user_search.html', context)
 
 @login_required
