@@ -246,6 +246,7 @@ def sync_wannabe(request):
     User = get_user_model()
     num_new_users = 0
     num_new_crews = 0
+    current_syced_wannabe_users = User.objects.filter(profile__wannabe_id__isnull=False)
     for crew in all_crews_all_users:
         crew['name']
         if not Crew.objects.filter(crew_id=crew['id']):
@@ -266,11 +267,20 @@ def sync_wannabe(request):
             else:
                 new_user = User.objects.get(email=user['profile']['email'])
             
+            current_syced_wannabe_users = current_syced_wannabe_users.exclude(id=new_user.id)
+
             if not CrewUser.objects.filter(user=new_user, crew=new_crew).exists():
-                new_crew_user = CrewUser(user=new_user, crew=new_crew)
+                is_chief = True if user['role']['id'] in {8, 9} else False
+                new_crew_user = CrewUser(user=new_user, crew=new_crew, is_chief=is_chief)
                 new_crew_user.save()
 
-    result = {"new_users": num_new_users, "new_crews": num_new_crews}
+    deleted_users = 0
+    for olduser in current_syced_wannabe_users:
+        if not olduser.is_superuser:
+            olduser.delete()
+            deleted_users = deleted_users+1
+
+    result = {"new_users": num_new_users, "new_crews": num_new_crews, "deleted_users": deleted_users}
 
     return JsonResponse(result)
 
