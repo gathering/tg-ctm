@@ -142,7 +142,7 @@ def new_timeslot_task_crew_search(request, timeslot_id):
         timeslot = TaskTimeSlot.objects.get(id=request.POST.get('id_timeslot'))
         timeslot_user = TaskTimeSlotUser(user=user, timeslot=timeslot)
         timeslot_user.save()
-        return redirect("/timeslot/" + str(timeslot.id))
+        return redirect("/timeslots_user/" + str(timeslot.id) + "/addsearch")
     
     context = {"timeslots": timeslots, "cur_timeslot": timeslot, "users": users}
     return render(request, 'new_timeslot_user_search.html', context)
