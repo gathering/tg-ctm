@@ -131,6 +131,24 @@ def new_timeslot_task_crew(request, timeslot_id):
 
 @login_required
 @staff_member_required
+def new_timeslot_task_crew_search(request, timeslot_id):
+    timeslot = TaskTimeSlot.objects.get(id=timeslot_id)
+    timeslots = TaskTimeSlot.objects.all()
+    User = get_user_model()
+    users = User.objects.all()
+
+    if request.POST:
+        user = User.objects.get(id=request.POST.get('id_user'))
+        timeslot = TaskTimeSlot.objects.get(id=request.POST.get('id_timeslot'))
+        timeslot_user = TaskTimeSlotUser(user=user, timeslot=timeslot)
+        timeslot_user.save()
+        return redirect("/timeslot/" + str(timeslot.id))
+    
+    context = {"timeslots": timeslots, "cur_timeslot": timeslot, "users": users}
+    return render(request, 'new_timeslot_user_search.html', context)
+
+@login_required
+@staff_member_required
 def view_crews(request):
     crews = Crew.objects.all()
     context = {"crews": crews}

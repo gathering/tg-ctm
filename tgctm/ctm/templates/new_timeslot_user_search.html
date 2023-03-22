@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% load django_bootstrap5 %}
+
+{% block title %}New timeslot user assignment for timeslot {{ cur_timeslot }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">New timeslot user assignment for timeslot {{ cur_timeslot }}</h1>
+</div>
+
+
+<form method="post" class="form">
+    {% csrf_token %}
+    <div class="mb-3">
+        <label for="exampleDataList" class="form-label">User</label>
+        <input class="form-control" list="userDatalistOptions" name="id_user" id="id_user" placeholder="Type to search for a user...">
+        <datalist id="userDatalistOptions">
+            {% for user in users %}
+            <option value={{user.id}}>{{user.first_name}} {{user.last_name}} ({% for crew in user.profile.get_all_crews %}{% if forloop.first %}{{ crew.name }}{%else%}, {{ crew.name }}{%endif%}{% endfor %})</option>
+            {% endfor %}
+        </datalist>
+    </div>
+    <div class="mb-3">
+        <label class="form-label" for="id_timeslot">Timeslot</label>
+        <select name="id_timeslot" class="form-select" required id="id_timeslot">
+            {% for timeslot in timeslots %}
+            {{ timeslot.id }} == {{ cur_timeslot.id }}
+            <option value="{{timeslot.id}}" {%if timeslot.id == cur_timeslot.id %}selected{% endif %}>{{timeslot.task.name}} ({{timeslot.starts|date:"l d.m.Y, \k\l H:m:s"}} - {{timeslot.ends|date:"l d.m.Y, \k\l H:m:s"}})</option>
+            {% endfor %}
+        </select>
+    </div>
+    <button class="btn btn-primary" type="submit">Add</button>
+</form>
+
+
+
+{%endblock%}

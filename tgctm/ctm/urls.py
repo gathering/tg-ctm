@@ -16,6 +16,7 @@ urlpatterns = [
     path('timeslot/new', views.new_timeslot, name='edit_timeslot'),
     path('timeslots_crew/<int:timeslot_id>', views.view_timeslot_task_crew, name='view_timeslot_task_crew'),
     path('timeslots_crew/<int:timeslot_id>/add', views.new_timeslot_task_crew, name='new_timeslot_task_crew'),
+    path('timeslots_crew/<int:timeslot_id>/addsearch', views.new_timeslot_task_crew_search, name='new_timeslot_task_crew_search'),
     path('crews', views.view_crews, name='view_crews'),
     path('crew/<int:crew_id>', views.edit_crew, name='edit_crew'),
     path('users', views.view_users, name='view_users'),
