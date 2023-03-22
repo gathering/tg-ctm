@@ -151,6 +151,10 @@ STATICFILES_DIRS = [
     BASE_DIR / "static",
 ]
 
+SOCIAL_AUTH_PIPELINE = (
+    'social_core.pipeline.social_auth.associate_by_email',
+)
+
 # Add you connection settings here
 SOCIAL_AUTH_KEYCLOAK_KEY = os.environ.get("SOCIAL_AUTH_KEYCLOAK_KEY")
 SOCIAL_AUTH_KEYCLOAK_SECRET = os.environ.get("SOCIAL_AUTH_KEYCLOAK_SECRET")
