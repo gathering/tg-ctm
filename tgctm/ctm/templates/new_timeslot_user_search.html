@@ -26,7 +26,7 @@
         <select name="id_timeslot" class="form-select" required id="id_timeslot">
             {% for timeslot in timeslots %}
             {{ timeslot.id }} == {{ cur_timeslot.id }}
-            <option value="{{timeslot.id}}" {%if timeslot.id == cur_timeslot.id %}selected{% endif %}>{{timeslot.task.name}} ({{timeslot.starts|date:"l d.m.Y, \k\l H:m:s"}} - {{timeslot.ends|date:"l d.m.Y, \k\l H:m:s"}})</option>
+            <option value="{{timeslot.id}}" {%if timeslot.id == cur_timeslot.id %}selected{% endif %}>{{timeslot.task.name}} ({{timeslot.starts|date:"l d.m.Y, \k\l H:i:s"}} - {{timeslot.ends|date:"l d.m.Y, \k\l H:i:s"}})</option>
             {% endfor %}
         </select>
     </div>

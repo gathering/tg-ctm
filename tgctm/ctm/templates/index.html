@@ -20,8 +20,8 @@
       <tr>
         <td>{{ assigned_timeslot.timeslot.task.name }}</td>
         <td>{{ assigned_timeslot.timeslot.task.description }}</td>
-        <td>{{ assigned_timeslot.timeslot.starts|date:"l d.m.Y, \k\l H:m:s" }}</td>
-        <td>{{ assigned_timeslot.timeslot.ends|date:"l d.m.Y, \k\l H:m:s" }}</td>
+        <td>{{ assigned_timeslot.timeslot.starts|date:"l d.m.Y, \k\l H:i:s" }}</td>
+        <td>{{ assigned_timeslot.timeslot.ends|date:"l d.m.Y, \k\l H:i:s" }}</td>
         <td>{% if assigned_timeslot.has_attended %}Yes{%else%}No{%endif%}</td>
       </tr>
       {% empty %}

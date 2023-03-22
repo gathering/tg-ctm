@@ -25,8 +25,8 @@
       <tr>
         <th scope="row">{{ timeslot.id }}</th>
         <td>{{ timeslot.task.name }}</td>
-        <td>{{ timeslot.starts|date:"l d.m.Y, \k\l H:m:s" }}</td>
-        <td>{{ timeslot.ends|date:"l d.m.Y, \k\l H:m:s" }}</td>
+        <td>{{ timeslot.starts|date:"l d.m.Y, \k\l H:i:s" }}</td>
+        <td>{{ timeslot.ends|date:"l d.m.Y, \k\l H:i:s" }}</td>
         <td>{{ timeslot.max_participants }}</td>
         <td>{{ timeslot.num_assigned_users }}</td>
         <td>{{ timeslot.num_assiged_users_checked_in }} / {{ timeslot.num_assigned_users }} </td>
