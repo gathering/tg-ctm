@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}Wannabe sync{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Wannabe sync</h1>
+</div>
+
+<p>After starting the sync, please be prepared to wait for a little while. Do not refresh or leave this site.</p>
+
+<div>
+    <button class="btn btn-lg btn-success" onclick="triggerWannabeSync()">Start sync!</button>
+    <div id="loading-gif" class="m-auto" style="display: none;">
+        <img src="/static/loading.gif" style="width: 30%;" />
+        <h3>Please wait...</h3>
+    </div>
+    <div id="sync-stats" style="display: none;">
+        <h3>Sync finished!</h3>
+        New users: <span id="new_users"></span> <br/>
+        New crews: <span id="new_crews"></span>
+    </div>
+</div>
+
+{%endblock%}
+
+{% block script %}
+<script src="/static/js/ctm.js"></script>
+{%endblock%}

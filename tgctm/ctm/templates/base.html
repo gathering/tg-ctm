@@ -120,6 +120,12 @@
           {%endif%}
           {% if user.is_superuser %}
           <li class="nav-item">
+            <a class="nav-link" href="/sync">
+              <span data-feather="bar-chart-2" class="align-text-bottom"></span>
+              Wannabe Sync
+            </a>
+          </li>
+          <li class="nav-item">
             <a class="nav-link" href="/admin">
               <span data-feather="bar-chart-2" class="align-text-bottom"></span>
               Admin

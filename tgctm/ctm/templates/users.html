@@ -21,12 +21,11 @@
       <tr>
         <th scope="row">{{ user.id }}</th>
         <td>{{ user.first_name }} {{ user.last_name }}</td>
-        <td>{{ user.crewuser.crew.name }}</td>
+        <td>{% for crew in user.profile.get_all_crews %}{% if forloop.first %}<a href="/crew/{{crew.id}}">{{ crew.name }}</a>{%else%}, <a href="/crew/{{crew.id}}">{{ crew.name }}</a>{%endif%}{% endfor %}</td>
         <td>{{ user.profile.num_assigned_timeslots }}</td>
       </tr>
       {% endfor %}
     </tbody>
   </table>
-
 
 {%endblock%}

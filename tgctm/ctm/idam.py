@@ -24,3 +24,6 @@ class TGBT:
     
     def get_wannabe_id_from_nfc_tag(self, nfc):
         return self.request("get_wbuser_fromidcard/?sn=" +nfc)['wannabe_id']
+    
+    def get_all_crews_with_crew_members(self):
+        return self.request("get_wballcrewsallcrewmembers/")['data']

@@ -2,6 +2,10 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
+from django.contrib.auth.decorators import user_passes_test
+from django.http import JsonResponse
+
+import re
 
 from .models import *
 from .forms import *
@@ -137,12 +141,12 @@ def view_crews(request):
 def edit_crew(request, crew_id):
     crew = Crew.objects.get(id=crew_id)
     form = CrewForm(request.POST or None, instance=crew)
-    
+    crewusers = CrewUser.objects.filter(crew_id=crew_id)
     if form.is_valid():
         form.save()
         return redirect("/crew/" + str(crew.id))
     
-    context = {"crew":crew, "form": form}
+    context = {"crew":crew, "form": form, "crewusers": crewusers}
     return render(request, 'edit_crew.html', context)
 
 @login_required
@@ -175,3 +179,74 @@ def register_attendance(request, timeslot_id):
             context = {"timeslot": timeslot, "form": form, "alerts": [{"text": "NFC Tag not found!", "color": "danger"}]}
 
     return render(request, "register_attendance.html", context)
+
+@login_required
+@user_passes_test(lambda u: u.is_superuser)
+def view_sync_wannabe(request):
+    User = get_user_model()
+    num_users = User.objects.all().count()
+    num_crews = Crew.objects.all().count()
+
+    context = {"num_users": num_users, "num_crews": num_crews}
+    return render(request, 'wannabe_sync.html', context)
+
+def remove_emojis(data):
+    emoj = re.compile("["
+        u"\U0001F600-\U0001F64F"  # emoticons
+        u"\U0001F300-\U0001F5FF"  # symbols & pictographs
+        u"\U0001F680-\U0001F6FF"  # transport & map symbols
+        u"\U0001F1E0-\U0001F1FF"  # flags (iOS)
+        u"\U00002500-\U00002BEF"  # chinese char
+        u"\U00002702-\U000027B0"
+        u"\U00002702-\U000027B0"
+        u"\U000024C2-\U0001F251"
+        u"\U0001f926-\U0001f937"
+        u"\U00010000-\U0010ffff"
+        u"\u2640-\u2642" 
+        u"\u2600-\u2B55"
+        u"\u200d"
+        u"\u23cf"
+        u"\u23e9"
+        u"\u231a"
+        u"\ufe0f"  # dingbats
+        u"\u3030"
+                      "]+", re.UNICODE)
+    return re.sub(emoj, '', data)
+
+@login_required
+@user_passes_test(lambda u: u.is_superuser)
+def sync_wannabe(request):
+    # Little bit ugly sync code
+    tgbt = TGBT()
+    all_crews_all_users = tgbt.get_all_crews_with_crew_members()
+    User = get_user_model()
+    num_new_users = 0
+    num_new_crews = 0
+    for crew in all_crews_all_users:
+        crew['name']
+        if not Crew.objects.filter(crew_id=crew['id']):
+            new_crew = Crew(name=crew['name'], crew_id=crew['id'])
+            new_crew.save()
+            num_new_crews=num_new_crews+1
+        else:
+            new_crew = Crew.objects.get(crew_id=crew['id'])
+        for user in crew['users']:
+            if not User.objects.filter(email=user['profile']['email']).exists():
+                full_name = remove_emojis(user['profile']['name']) # This is because of you, Sklirg.
+                first_name, last_name = str(full_name).rsplit(' ', 1)
+                new_user = User(username=user['profile']['email'], email=user['profile']['email'], first_name=first_name, last_name=last_name)
+                new_user.save()
+                new_user.profile.wannabe_id = user['user_id']
+                new_user.save()
+                num_new_users=num_new_users+1
+            else:
+                new_user = User.objects.get(email=user['profile']['email'])
+            
+            if not CrewUser.objects.filter(user=new_user, crew=new_crew).exists():
+                new_crew_user = CrewUser(user=new_user, crew=new_crew)
+                new_crew_user.save()
+
+    result = {"new_users": num_new_users, "new_crews": num_new_crews}
+
+    return JsonResponse(result)
+

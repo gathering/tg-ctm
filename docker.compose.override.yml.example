@@ -1,0 +1,12 @@
+services:
+  app:
+    command: python3 manage.py runserver 0.0.0.0:8020
+    volumes: 
+      - ./tgctm/:/app/tgctm/
+
+  nginx:
+    volumes: 
+      - ./tgctm/static/:/var/www/html/static/
+
+
+# This file BREAKS Django admin styling

@@ -15,6 +15,7 @@
         <th scope="col">Starts</th>
         <th scope="col">Ends</th>
         <th scope="col">Max participants</th>
+        <th scope="col">Number of assigned users</th>
         <th scope="col">Attendance</th>
         <th scope="col"></th>
       </tr>
@@ -24,9 +25,10 @@
       <tr>
         <th scope="row">{{ timeslot.id }}</th>
         <td>{{ timeslot.task.name }}</td>
-        <td>{{ timeslot.starts }}</td>
-        <td>{{ timeslot.ends }}</td>
+        <td>{{ timeslot.starts|date:"l d.m.Y, \k\l H:m:s" }}</td>
+        <td>{{ timeslot.ends|date:"l d.m.Y, \k\l H:m:s" }}</td>
         <td>{{ timeslot.max_participants }}</td>
+        <td>{{ timeslot.num_assigned_users }}</td>
         <td>{{ timeslot.num_assiged_users_checked_in }} / {{ timeslot.num_assigned_users }} </td>
         <td><a href="/timeslot/{{ timeslot.id }}" type="button" class="btn btn-primary btn-sm">Edit</a></td>
       </tr>

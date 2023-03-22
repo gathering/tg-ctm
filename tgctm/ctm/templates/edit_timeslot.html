@@ -42,7 +42,7 @@
 
 <div class="d-flex flex-column pt-3 align-self-end pb-2 mb-3 border-bottom">
     <h1 class="h2">Allocated users for timeslot {{ timeslot.id }}</h1>
-    <p class="lead py-1">Start: <b>{{ timeslot.starts }}</b> - Ends: <b>{{ timeslot.ends }}</b></p>
+    <p class="lead py-1">Start: <b>{{ timeslot.starts|date:"l d.m.Y, \k\l H:m:s" }}</b> - Ends: <b>{{ timeslot.ends|date:"l d.m.Y, \k\l H:m:s" }}</b></p>
 </div>
 
 <table class="table align-middle">
