@@ -86,6 +86,10 @@ class TaskTimeSlotUser(models.Model):
     def attendance(self):
         return CheckInUserTaskTimeSlot.objects.get(user=self.user.id, timeslot=self.timeslot)
     
+    @property
+    def has_attended(self):
+        return CheckInUserTaskTimeSlot.objects.filter(user=self.user.id, timeslot=self.timeslot).exists()
+    
 
 class CheckInUserTaskTimeSlot(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
