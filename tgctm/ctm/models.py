@@ -99,7 +99,7 @@ class CheckInUserTaskTimeSlot(models.Model):
     updated_on = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.wannabe_user + " - " + self.timeslot
+        return self.user.username + " - " + str(self.timeslot.id)
     
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)

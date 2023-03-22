@@ -194,9 +194,12 @@ def register_attendance(request, timeslot_id):
         try:
             user = User.objects.filter(profile__wannabe_id=tgbt.get_wannabe_id_from_nfc_tag(nfc)).first()
             if len(CheckInUserTaskTimeSlot.objects.filter(user=user, timeslot=timeslot)) == 0:
-                attendance = CheckInUserTaskTimeSlot(user=user, timeslot=timeslot)
-                attendance.save()
-                context = {"timeslot": timeslot, "form": form, "alerts": [{"text": "Saved!", "color": "success"}]}
+                if not TaskTimeSlotUser.objects.filter(user=user, timeslot=timeslot).exists():
+                    context = {"timeslot": timeslot, "form": form, "alerts": [{"text": "User not registered to this timeslot!", "color": "danger"}]}
+                else:
+                    attendance = CheckInUserTaskTimeSlot(user=user, timeslot=timeslot)
+                    attendance.save()
+                    context = {"timeslot": timeslot, "form": form, "alerts": [{"text": "User checked in!", "color": "success"}]}
             else:
                 context = {"timeslot": timeslot, "form": form, "alerts": [{"text": "Duplicate attendance!", "color": "warning"}]}
         except:
