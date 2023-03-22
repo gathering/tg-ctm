@@ -37,7 +37,7 @@
       <th scope="row">{{ crewuser.user.id }}</th>
       <td>{{ crewuser.user.first_name }} {{ crewuser.user.last_name }}</td>
       <td>{{ crewuser.user.profile.num_assigned_timeslots }}</td>
-      <td>{% for tasktimeslotuser in crewuser.user.profile.assigned_timeslots %} {{ tasktimeslotuser.timeslot.starts|date:"l d.m.Y, \k\l H:m:s" }} <br/> {% endfor %}</td>
+      <td>{% for tasktimeslotuser in crewuser.user.profile.assigned_timeslots %} {{ tasktimeslotuser.timeslot.starts|date:"l d.m.Y, \k\l H:i:s" }} <br/> {% endfor %}</td>
     </tr>
     {% endfor %}
   </tbody>
