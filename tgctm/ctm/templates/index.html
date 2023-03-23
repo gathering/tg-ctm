@@ -6,29 +6,58 @@
 </div>
 
 <table class="table align-middle">
-    <thead>
-      <tr>
-        <th scope="col">Task</th>
-        <th scope="col">Description</th>
-        <th scope="col">Starts</th>
-        <th scope="col">Ends</th>
-        <th scope="col">Checked in</th>
-      </tr>
-    </thead>
-    <tbody>
-        {% for assigned_timeslot in user.profile.assigned_timeslots%}
-      <tr>
-        <td>{{ assigned_timeslot.timeslot.task.name }}</td>
-        <td>{{ assigned_timeslot.timeslot.task.description }}</td>
-        <td>{{ assigned_timeslot.timeslot.starts|date:"l d.m.Y, \k\l H:i:s" }}</td>
-        <td>{{ assigned_timeslot.timeslot.ends|date:"l d.m.Y, \k\l H:i:s" }}</td>
-        <td>{% if assigned_timeslot.has_attended %}Yes{%else%}No{%endif%}</td>
-      </tr>
-      {% empty %}
-      <td colspan=5>You have no tasks assigned, yet!</td>
-      {% endfor %}
-    </tbody>
-  </table>
+  <thead>
+    <tr>
+      <th scope="col">Task</th>
+      <th scope="col">Description</th>
+      <th scope="col">Starts</th>
+      <th scope="col">Ends</th>
+      <th scope="col">Checked in</th>
+    </tr>
+  </thead>
+  <tbody>
+      {% for assigned_timeslot in user.profile.assigned_timeslots%}
+    <tr>
+      <td>{{ assigned_timeslot.timeslot.task.name }}</td>
+      <td>{{ assigned_timeslot.timeslot.task.description }}</td>
+      <td>{{ assigned_timeslot.timeslot.starts|date:"l d.m.Y, \k\l H:i:s" }}</td>
+      <td>{{ assigned_timeslot.timeslot.ends|date:"l d.m.Y, \k\l H:i:s" }}</td>
+      <td>{% if assigned_timeslot.has_attended %}Yes{%else%}No{%endif%}</td>
+    </tr>
+    {% empty %}
+    <td colspan=5>You have no tasks assigned, yet!</td>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% for chiefcrew in chiefcrews %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">{{ chiefcrew.crew.name }}</h1>
+</div>
+
+<table class="table align-middle">
+  <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">User</th>
+      <th scope="col">Assigned timeslots</th>
+      <th scope="col">Timeslots</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for crewuser in crewusers %}
+      {% if crewuser.crew.crew_id == chiefcrew.crew.crew_id %}
+        <tr>
+          <th scope="row">{{ crewuser.user.id }}</th>
+          <td>{{ crewuser.user.first_name }} {{ crewuser.user.last_name }}</td>
+          <td>{{ crewuser.user.profile.num_assigned_timeslots }}</td>
+          <td>{% for tasktimeslotuser in crewuser.user.profile.assigned_timeslots %} {{ tasktimeslotuser.timeslot.starts|date:"l d.m.Y, \k\l H:i:s" }} <br/> {% endfor %}</td>
+        </tr>
+      {% endif %}
+    {% endfor %}
+  </tbody>
+</table>
+{% endfor %}
 
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
     <h1 class="h2">TG-CTM</h1>
