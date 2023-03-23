@@ -25,7 +25,17 @@
         <td>{{ crew.name }}</td>
         <td>{{ crew.num_users }}</td>
         <td>{{ crew.num_users_assigned }}</td>
-        <td>{{ crew.percentage_users_with_assigned_timeslot }} %</td>
+        <td>
+          {% if crew.num_users == 0 %}
+            <span class="badge bg-success">100 %</span>
+          {% elif crew.percentage_users_with_assigned_timeslot == 100 %}
+            <span class="badge bg-success">{{ crew.percentage_users_with_assigned_timeslot }} %</span>
+          {% elif crew.percentage_users_with_assigned_timeslot > 30 %}
+            <span class="badge bg-warning">{{ crew.percentage_users_with_assigned_timeslot }} %</span>
+          {% else %}
+            <span class="badge bg-danger">{{ crew.percentage_users_with_assigned_timeslot }} %</span>
+          {% endif %}
+        </td>
         <td><a href="/crew/{{ crew.id }}" type="button" class="btn btn-primary btn-sm">Edit</a></td>
       </tr>
       {% endfor %}
