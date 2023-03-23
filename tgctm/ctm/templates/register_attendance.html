@@ -11,11 +11,17 @@
 
 <form method="post" class="form">
     {% csrf_token %}
-  
+
     {% bootstrap_form form %}
-  
+
     {% bootstrap_button button_type="submit" content="Save" %}
-      
-  </form>
+</form>
+
+<script>
+  // auto select nfc tag field
+  window.onload = function() {
+    document.getElementById("id_nfc_tag").focus();
+  };
+</script>
 
 {%endblock%}
