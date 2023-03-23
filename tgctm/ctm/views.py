@@ -70,11 +70,11 @@ def edit_timeslot_attendance(request, timeslot_id, timeslot_attendance_id):
     timeslot = TaskTimeSlot.objects.get(id=timeslot_id)
     timeslot_attendance = CheckInUserTaskTimeSlot.objects.get(id=timeslot_attendance_id)
     form = CheckInUserTaskTimeSlotForm(request.POST or None, instance=timeslot_attendance)
-    
+
     if form.is_valid():
         form.save()
         return redirect("/timeslot/" + str(timeslot.id))
-    
+
     context = {"timeslot_attendance":timeslot_attendance, "timeslot": timeslot, "form": form}
     return render(request, 'edit_register_attendance.html', context)
 
@@ -96,9 +96,19 @@ def new_timeslot_attendance(request, timeslot_id, user_id):
 
     if form.is_valid():
         form.save()
-        return redirect("/timeslot/" + str(timeslot.id))    
-    
+        return redirect("/timeslot/" + str(timeslot.id))
+
     return render(request, 'edit_register_attendance.html', context)
+
+@login_required
+@staff_member_required
+def remove_user_from_timeslot(request, timeslot_id, user_id):
+    timeslot = TaskTimeSlot.objects.get(id=timeslot_id)
+    User = get_user_model()
+    user = User.objects.get(id=user_id)
+    timeslot_user = TaskTimeSlotUser.objects.get(timeslot=timeslot, user=user)
+    timeslot_user.delete()
+    return redirect("/timeslot/" + str(timeslot.id))
 
 @login_required
 @staff_member_required
@@ -125,7 +135,7 @@ def new_timeslot_task_crew(request, timeslot_id):
     if form.is_valid():
         form.save()
         return redirect("/timeslot/" + str(timeslot.id))
-    
+
     context = {"timeslot": timeslot, "form": form}
     return render(request, 'new_timeslot_user.html', context)
 
@@ -141,16 +151,16 @@ def new_timeslot_task_crew_search(request, timeslot_id):
     if request.POST:
         user = User.objects.get(id=request.POST.get('id_user'))
         timeslot = TaskTimeSlot.objects.get(id=request.POST.get('id_timeslot'))
-        
+
         if TaskTimeSlotUser.objects.filter(user=user, timeslot=timeslot).exists():
             context = {"timeslots": timeslots, "cur_timeslot": timeslot, "users": users, "alerts": [{"text": "Duplicate attendance!", "color": "warning"}]}
             return render(request, 'new_timeslot_user_search.html', context)
-        
+
         timeslot_user = TaskTimeSlotUser(user=user, timeslot=timeslot)
         timeslot_user.save()
         return redirect("/timeslots_user/" + str(timeslot.id) + "/addsearch")
-    
-    
+
+
     return render(request, 'new_timeslot_user_search.html', context)
 
 @login_required
@@ -169,7 +179,7 @@ def edit_crew(request, crew_id):
     if form.is_valid():
         form.save()
         return redirect("/crew/" + str(crew.id))
-    
+
     context = {"crew":crew, "form": form, "crewusers": crewusers}
     return render(request, 'edit_crew.html', context)
 
@@ -229,7 +239,7 @@ def remove_emojis(data):
         u"\U000024C2-\U0001F251"
         u"\U0001f926-\U0001f937"
         u"\U00010000-\U0010ffff"
-        u"\u2640-\u2642" 
+        u"\u2640-\u2642"
         u"\u2600-\u2B55"
         u"\u200d"
         u"\u23cf"
@@ -269,7 +279,7 @@ def sync_wannabe(request):
                 num_new_users=num_new_users+1
             else:
                 new_user = User.objects.get(email=user['profile']['email'])
-            
+
             current_syced_wannabe_users = current_syced_wannabe_users.exclude(id=new_user.id)
 
             if not CrewUser.objects.filter(user=new_user, crew=new_crew).exists():
@@ -286,4 +296,3 @@ def sync_wannabe(request):
     result = {"new_users": num_new_users, "new_crews": num_new_crews, "deleted_users": deleted_users}
 
     return JsonResponse(result)
-

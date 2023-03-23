@@ -25,18 +25,18 @@
       <p class="card-text text-white fs-3">Attendance:<br/>{{ timeslot.num_assiged_users_checked_in }} / {{ timeslot.num_assigned_users }}</p>
     </div>
   </div>
-  
-  
+
+
 </div>
 
 <form method="post" class="form">
     {% csrf_token %}
-  
+
     {% bootstrap_form form %}
-  
+
     {% bootstrap_button button_type="submit" content="Save" %}
     {% bootstrap_button button_type="reset" content="Cancel" %}
-      
+
   </form>
 
 
@@ -61,6 +61,7 @@
         <td>{{ timeslot_user.user.first_name }} {{ timeslot_user.user.last_name }}</td>
         <td>{%if timeslot_user.attendance %}<span class="text-success">Yes ({{timeslot_user.attendance.created_on}})  (<a href="/timeslot/{{ timeslot.id }}/attendance/{{timeslot_user.attendance.id}}">edit</a>)</span>{% else %}<span class="text-danger">No</span>{%endif%}</td>
         <td>{%if not timeslot_user.attendance %}<a href="/timeslot/{{ timeslot.id }}/attendance/new/{{timeslot_user.user.id}}" class="btn btn-sm btn-info">Register attendance</a>{% endif %}</td>
+        <td><a href="/timeslot/{{ timeslot.id }}/user/{{timeslot_user.user.id}}/remove" class="btn btn-sm btn-danger">Remove user from timeslot</a></td>
       </tr>
       {% endfor %}
     </tbody>
