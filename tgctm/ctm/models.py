@@ -74,6 +74,9 @@ class CrewUser(models.Model):
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True)
 
+    def __str__(self):
+        return self.user.username + " - " + self.crew.name + " | Chief: " + str(self.is_chief)
+
 class TaskTimeSlotUser(models.Model):
     timeslot = models.ForeignKey(TaskTimeSlot, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)

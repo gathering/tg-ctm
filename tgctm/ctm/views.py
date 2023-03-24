@@ -289,6 +289,11 @@ def sync_wannabe(request):
                 is_chief = True if user['role']['id'] in {8, 9} else False
                 new_crew_user = CrewUser(user=new_user, crew=new_crew, is_chief=is_chief)
                 new_crew_user.save()
+            else:
+                new_crew_user = CrewUser.objects.filter(user=new_user, crew=new_crew).first()
+                if user['role']['id'] in {8, 9}:
+                    new_crew_user.is_chief = True
+                    new_crew_user.save()
 
     deleted_users = 0
     for olduser in current_syced_wannabe_users:
