@@ -1,3 +1,8 @@
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="./tgctm/static/ctm-white.png">
+  <img alt="ctm logo" src="./tgctm/static/ctm.png" height="100">
+</picture>
+
 # TG-CTM
 
 The Gatherings Common Task Management
