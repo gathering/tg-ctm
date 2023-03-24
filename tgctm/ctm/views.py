@@ -196,6 +196,15 @@ def view_users(request):
 
 @login_required
 @staff_member_required
+def view_user(request, user_id):
+    User = get_user_model()
+    user = User.objects.get(id=user_id)
+    timeslot_users = TaskTimeSlotUser.objects.filter(user=user).order_by("timeslot__starts")
+    context = {"cur_user": user, "timeslot_users": timeslot_users}
+    return render(request, "user.html", context)
+
+@login_required
+@staff_member_required
 def register_attendance(request, timeslot_id):
     form = RegisterAttendanceForm()
     timeslot = TaskTimeSlot.objects.get(id=timeslot_id)

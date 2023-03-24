@@ -10,12 +10,12 @@
 
 <form method="post" class="form">
     {% csrf_token %}
-  
+
     {% bootstrap_form form %}
-  
+
     {% bootstrap_button button_type="submit" content="Save" %}
     {% bootstrap_button button_type="reset" content="Cancel" %}
-      
+
   </form>
 
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
@@ -38,9 +38,10 @@
       <td>{{ crewuser.user.first_name }} {{ crewuser.user.last_name }}</td>
       <td>{{ crewuser.user.profile.num_assigned_timeslots }}</td>
       <td>{% for tasktimeslotuser in crewuser.user.profile.assigned_timeslots %} {{ tasktimeslotuser.timeslot.starts|date:"l d.m.Y, \k\l H:i:s" }} <br/> {% endfor %}</td>
+      <td><a href="/user/{{ crewuser.user.id }}" type="button" class="btn btn-primary btn-sm">Edit</a></td>
     </tr>
     {% endfor %}
   </tbody>
 </table>
-  
+
 {%endblock%}

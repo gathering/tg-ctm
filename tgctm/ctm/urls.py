@@ -21,6 +21,7 @@ urlpatterns = [
     path('crews', views.view_crews, name='view_crews'),
     path('crew/<int:crew_id>', views.edit_crew, name='edit_crew'),
     path('users', views.view_users, name='view_users'),
+    path('user/<int:user_id>', views.view_user, name='view_user'),
     path('sync', views.view_sync_wannabe, name='view_sync_wannabe'),
     path('api/sync', views.sync_wannabe, name='sync_wannabe'),
 ]
