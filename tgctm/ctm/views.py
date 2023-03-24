@@ -105,6 +105,16 @@ def new_timeslot_attendance(request, timeslot_id, user_id):
 
 @login_required
 @staff_member_required
+def remove_user_from_timeslot(request, timeslot_id, user_id):
+    timeslot = TaskTimeSlot.objects.get(id=timeslot_id)
+    User = get_user_model()
+    user = User.objects.get(id=user_id)
+    timeslot_user = TaskTimeSlotUser.objects.get(timeslot=timeslot, user=user)
+    timeslot_user.delete()
+    return redirect("/timeslot/" + str(timeslot.id))
+
+@login_required
+@staff_member_required
 def view_timeslots_tasks(request, task_id):
     task = Task.objects.get(id=task_id)
     timeslots = TaskTimeSlot.objects.filter(task=task_id).order_by("starts")
