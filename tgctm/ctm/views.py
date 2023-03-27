@@ -111,7 +111,7 @@ def remove_user_from_timeslot(request, timeslot_id, user_id):
     user = User.objects.get(id=user_id)
     timeslot_user = TaskTimeSlotUser.objects.get(timeslot=timeslot, user=user)
     timeslot_user.delete()
-    return redirect("/timeslot/" + str(timeslot.id))
+    return redirect(request.META.get('HTTP_REFERER'))
 
 @login_required
 @staff_member_required
@@ -120,6 +120,13 @@ def view_timeslots_tasks(request, task_id):
     timeslots = TaskTimeSlot.objects.filter(task=task_id).order_by("starts")
     context = {"tasks": task, "timeslots": timeslots}
     return render(request, 'timeslots.html', context)
+
+@login_required
+@staff_member_required
+def view_timeslots_users(request):
+    timeslot_users = TaskTimeSlotUser.objects.all().order_by("timeslot__starts", "id")
+    context = {"timeslot_users": timeslot_users}
+    return render(request, 'all_timeslots.html', context)
 
 @login_required
 @staff_member_required
@@ -193,6 +200,15 @@ def view_users(request):
     users = User.objects.filter(profile__isnull=False)
     context = {"users": users}
     return render(request, "users.html", context)
+
+@login_required
+@staff_member_required
+def view_user(request, user_id):
+    User = get_user_model()
+    user = User.objects.get(id=user_id)
+    timeslot_users = TaskTimeSlotUser.objects.filter(user=user).order_by("timeslot__starts")
+    context = {"cur_user": user, "timeslot_users": timeslot_users}
+    return render(request, "user.html", context)
 
 @login_required
 @staff_member_required
