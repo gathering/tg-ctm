@@ -29,6 +29,7 @@
       <th scope="col">User</th>
       <th scope="col">Assigned timeslots</th>
       <th scope="col">Timeslots</th>
+      <th scope="col">Attendance</th>
     </tr>
   </thead>
   <tbody>
@@ -37,7 +38,8 @@
       <th scope="row">{{ crewuser.user.id }}</th>
       <td>{{ crewuser.user.first_name }} {{ crewuser.user.last_name }}</td>
       <td>{{ crewuser.user.profile.num_assigned_timeslots }}</td>
-      <td>{% for tasktimeslotuser in crewuser.user.profile.assigned_timeslots %} {{ tasktimeslotuser.timeslot.starts|date:"l d.m.Y, \k\l H:i:s" }} <br/> {% endfor %}</td>
+      <td>{% for tasktimeslotuser in crewuser.user.profile.assigned_timeslots %} {{ tasktimeslotuser.timeslot.task.name }} {{ tasktimeslotuser.timeslot.starts|date:"l d.m.Y, \k\l H:i:s" }} <br/> {% endfor %}</td>
+      <td>{% for tasktimeslotuser in crewuser.user.profile.assigned_timeslots %} {% if tasktimeslotuser.attendance %}<span class="text-success">Yes ({{tasktimeslotuser.attendance.created_on}})  (<a href="/timeslot/{{ tasktimeslotuser.timeslot.id }}/attendance/{{tasktimeslotuser.attendance.id}}">edit</a>)</span>{% else %}<span class="text-danger">No</span>{%endif%} <br/> {% endfor %}</td>
       <td><a href="/user/{{ crewuser.user.id }}" type="button" class="btn btn-primary btn-sm">Edit</a></td>
     </tr>
     {% endfor %}
