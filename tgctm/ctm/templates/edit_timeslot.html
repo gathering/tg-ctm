@@ -50,6 +50,7 @@
       <tr>
         <th scope="col">#</th>
         <th scope="col">User</th>
+        <th scope="col">Crew</th>
         <th scope="col">Registered attendance</th>
         <th scope="col"></th>
       </tr>
@@ -59,6 +60,7 @@
       <tr>
         <th scope="row">{{ timeslot_user.id }}</th>
         <td>{{ timeslot_user.user.first_name }} {{ timeslot_user.user.last_name }}</td>
+        <td>{% for crew_user in timeslot_user.crew_users %}{{ crew_user.crew.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</td>
         <td>{%if timeslot_user.attendance %}<span class="text-success">Yes ({{timeslot_user.attendance.created_on}})  (<a href="/timeslot/{{ timeslot.id }}/attendance/{{timeslot_user.attendance.id}}">edit</a>)</span>{% else %}<span class="text-danger">No</span>{%endif%}</td>
         <td>{%if not timeslot_user.attendance %}<a href="/timeslot/{{ timeslot.id }}/attendance/new/{{timeslot_user.user.id}}" class="btn btn-sm btn-info">Register attendance</a>{% endif %}</td>
         <td><a href="/timeslot/{{ timeslot.id }}/user/{{timeslot_user.user.id}}/remove" class="btn btn-sm btn-danger">Remove user from timeslot</a></td>
