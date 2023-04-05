@@ -9,7 +9,7 @@ class Task(models.Model):
 
     def __str__(self):
         return self.name
-    
+
 class TaskTimeSlot(models.Model):
     task = models.ForeignKey(Task, on_delete=models.CASCADE)
     max_participants = models.IntegerField(blank=True)
@@ -20,7 +20,7 @@ class TaskTimeSlot(models.Model):
 
     def __str__(self):
         return self.task.name + " (" + str(self.starts) + " - " + str(self.ends) + ")"
-    
+
     @property
     def num_assigned_users(self):
         return len(TaskTimeSlotUser.objects.filter(timeslot=self.id))
@@ -28,8 +28,8 @@ class TaskTimeSlot(models.Model):
     @property
     def assigned_users(self):
         return TaskTimeSlotUser.objects.filter(timeslot=self.id)
-    
-    @property 
+
+    @property
     def num_assiged_users_checked_in(self):
         return len(CheckInUserTaskTimeSlot.objects.filter(timeslot=self.id))
 
@@ -41,7 +41,7 @@ class Crew(models.Model):
 
     def __str__(self):
         return self.name
-    
+
     @property
     def users(self):
         return CrewUser.objects.filter(crew=self.id)
@@ -49,7 +49,7 @@ class Crew(models.Model):
     @property
     def num_users(self):
         return len(CrewUser.objects.filter(crew=self.id))
-    
+
     @property
     def num_users_assigned(self):
         if len(self.users) == 0:
@@ -59,7 +59,7 @@ class Crew(models.Model):
             if crewuser.user.profile.is_assigned_any_timeslot > 0:
                 num_assigned=num_assigned+1
         return num_assigned
-    
+
     @property
     def percentage_users_with_assigned_timeslot(self):
         if self.num_users > 0:
@@ -89,11 +89,15 @@ class TaskTimeSlotUser(models.Model):
     @property
     def attendance(self):
         return CheckInUserTaskTimeSlot.objects.get(user=self.user.id, timeslot=self.timeslot)
-    
+
     @property
     def has_attended(self):
         return CheckInUserTaskTimeSlot.objects.filter(user=self.user.id, timeslot=self.timeslot).exists()
-    
+
+    @property
+    def crew_users(self):
+        return CrewUser.objects.filter(user=self.user)
+
 
 class CheckInUserTaskTimeSlot(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -103,14 +107,14 @@ class CheckInUserTaskTimeSlot(models.Model):
 
     def __str__(self):
         return self.user.username + " - " + str(self.timeslot.id)
-    
+
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     wannabe_id = models.CharField(max_length=200, blank=True)
 
     def __str__(self):
         return self.user.username
-    
+
     @property
     def is_assigned_any_timeslot(self):
         if len(TaskTimeSlotUser.objects.filter(user=self.user)) > 0:
@@ -120,16 +124,15 @@ class Profile(models.Model):
     @property
     def num_assigned_timeslots(self):
         return len(TaskTimeSlotUser.objects.filter(user=self.user))
-    
+
     @property
     def assigned_timeslots(self):
         return TaskTimeSlotUser.objects.filter(user=self.user)
 
-    @property 
+    @property
     def get_all_crews(self):
         crewusers = CrewUser.objects.filter(user=self.user)
         crews = list()
         for crewuser in crewusers:
             crews.append(crewuser.crew)
         return crews
-    
