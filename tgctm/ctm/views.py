@@ -120,10 +120,11 @@ def remove_user_from_timeslot(request, timeslot_id, user_id):
 @staff_member_required
 def remove_all_unattended_from_timeslot(request, timeslot_id):
     timeslot = TaskTimeSlot.objects.get(id=timeslot_id)
-    unattended = TaskTimeSlotUser.objects.filter(timeslot=timeslot)
-    for user in unattended:
-        if user.has_attended == False:
-            unattended.delete()
+    for user in timeslot.assigned_users:
+        attendance = CheckInUserTaskTimeSlot.objects.filter(user=user.user, timeslot=timeslot)
+        print(attendance)
+        if not attendance:
+            timeslot.assigned_users.delete()
             send_message_to_user(user.user, "❕ Du er fjernet fra oppgaven `" + str(timeslot) + "` grunnet manglende oppmøte. Spør din chief hvis du lurer på noe.")
     return redirect(request.META.get('HTTP_REFERER'))
 
