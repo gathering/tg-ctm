@@ -95,7 +95,7 @@ class TaskTimeSlotUser(models.Model):
 
     @property
     def attendance(self):
-        return CheckInUserTaskTimeSlot.objects.get(user=self.user.id, timeslot=self.timeslot)
+        return CheckInUserTaskTimeSlot.objects.filter(user=self.user.id, timeslot=self.timeslot).first()
 
     @property
     def has_attended(self):
