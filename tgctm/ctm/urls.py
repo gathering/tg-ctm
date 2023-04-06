@@ -14,6 +14,7 @@ urlpatterns = [
     path('timeslot/<int:timeslot_id>/attendance', views.register_attendance, name='register_attendance'),
     path('timeslot/<int:timeslot_id>/attendance/new/<int:user_id>', views.new_timeslot_attendance, name='new_timeslot_attendance'),
     path('timeslot/<int:timeslot_id>/user/<int:user_id>/remove', views.remove_user_from_timeslot, name='remove_user_from_timeslot'),
+    path('timeslot/<int:timeslot_id>/unassign_all_unattended', views.remove_all_unattended_from_timeslot, name='unassign_all_unattended'),
     path('timeslot/new', views.new_timeslot, name='edit_timeslot'),
     path('timeslot_users', views.view_timeslots_users, name='view_timeslots_users'),
     path('timeslots_user/<int:timeslot_id>', views.view_timeslot_task_crew, name='view_timeslot_task_crew'),
