@@ -10,7 +10,8 @@
         <a href="/timeslot/{{ timeslot.id}}/attendance" class="btn btn-sm btn-warning">Register attendance for this timeslot</a>
         <a href="/timeslots_user/{{ timeslot.id}}/addsearch" class="btn btn-sm btn-info">Assign user to this timeslot</a>
         <a href="/timeslots_user/{{ timeslot.id}}" class="btn btn-sm btn-success">Show crews assigned to this timeslot</a>
-        <a href="/timeslots" class="btn btn-sm btn-danger">Back</a>
+        <a href="/timeslot/{{ timeslot.id }}/unassign_all_unattended" class="btn btn-sm btn-danger">Unassign all unattended users</a>
+        <a href="/timeslots" class="btn btn-sm btn-info">Back</a>
     </div>
 </div>
 
