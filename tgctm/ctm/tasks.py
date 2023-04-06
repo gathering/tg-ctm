@@ -18,14 +18,12 @@ def send_reminders():
             if success:
                 timeslotuser.reminder_status = "TW"
                 timeslotuser.save()
-            return
         # if 60 minutes left, send reminder
-        if timeslotuser.reminder_status == "NO" and timeslotuser.timeslot.starts < timezone.now() + timedelta(hours=2) and timeslotuser.timeslot.starts > timezone.now():
+        elif timeslotuser.reminder_status == "NO" and timeslotuser.timeslot.starts < timezone.now() + timedelta(hours=2) and timeslotuser.timeslot.starts > timezone.now():
             print("Send reminder to " + timeslotuser.user.username + " for task " + str(timeslotuser.timeslot) + " (2 hours left)")
             success = send_message_to_user(timeslotuser.user, "🔔 Hei, oppgaven `" + str(timeslotuser.timeslot) + "` starter om under to timer. Oppmøte er ved trappen utenfor logistikk.")
             if success:
                 timeslotuser.reminder_status = "ON"
                 timeslotuser.save()
-            return
 
 timeloop.start()
