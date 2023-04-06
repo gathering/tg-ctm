@@ -7,7 +7,7 @@ from django.contrib.auth import get_user_model
 
 timeloop = Timeloop()
 
-@timeloop.job(interval=timedelta(seconds=10))
+@timeloop.job(interval=timedelta(minutes=1))
 def send_reminders():
     timeslotusers = TaskTimeSlotUser.objects.all()
     for timeslotuser in timeslotusers:
