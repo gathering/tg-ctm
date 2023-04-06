@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.utils.translation import gettext_lazy as _
 
 class Task(models.Model):
     name = models.CharField(max_length=200)
@@ -19,7 +20,7 @@ class TaskTimeSlot(models.Model):
     updated_on = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.task.name + " (" + str(self.starts) + " - " + str(self.ends) + ")"
+        return self.task.name + " (" + str(self.starts.astimezone().strftime("%Y-%m-%d %H:%M")) + ")"
 
     @property
     def num_assigned_users(self):
@@ -78,8 +79,14 @@ class CrewUser(models.Model):
         return self.user.username + " - " + self.crew.name + " | Chief: " + str(self.is_chief)
 
 class TaskTimeSlotUser(models.Model):
+    class ReminderStatus(models.TextChoices):
+        NONE = "NO", _("None")
+        ONCE = "ON", _("Once")
+        TWICE = "TW", _("Twice")
+
     timeslot = models.ForeignKey(TaskTimeSlot, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    reminder_status = models.CharField(max_length=2, choices=ReminderStatus.choices, default=ReminderStatus.NONE)
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True)
 

@@ -9,6 +9,7 @@ import re
 
 from .models import *
 from .forms import *
+from .utils import *
 
 from .idam import TGBT
 
@@ -99,6 +100,7 @@ def new_timeslot_attendance(request, timeslot_id, user_id):
 
     if form.is_valid():
         form.save()
+        send_message_to_user(user, "✅ Ditt oppmøte for oppgaven " + str(timeslot) + " er registrert. Takk for innsatsen!")
         return redirect("/timeslot/" + str(timeslot.id))
 
     return render(request, 'edit_register_attendance.html', context)
@@ -111,6 +113,7 @@ def remove_user_from_timeslot(request, timeslot_id, user_id):
     user = User.objects.get(id=user_id)
     timeslot_user = TaskTimeSlotUser.objects.get(timeslot=timeslot, user=user)
     timeslot_user.delete()
+    send_message_to_user(user, "❕ Du er fjernet fra oppgaven " + str(timeslot) + ". Spør din chief hvis du lurer på noe.")
     return redirect(request.META.get('HTTP_REFERER'))
 
 @login_required
@@ -144,6 +147,7 @@ def new_timeslot_task_crew(request, timeslot_id):
 
     if form.is_valid():
         form.save()
+        send_message_to_user(form.cleaned_data['user'], "🔔 Hei, du er tildelt oppgaven " + str(timeslot) + ". Du vil få en påminnelse to timer før oppsatt tidspunkt.")
         return redirect("/timeslot/" + str(timeslot.id))
 
     context = {"timeslot": timeslot, "form": form}
@@ -168,6 +172,7 @@ def new_timeslot_task_crew_search(request, timeslot_id):
 
         timeslot_user = TaskTimeSlotUser(user=user, timeslot=timeslot)
         timeslot_user.save()
+        send_message_to_user(user, "🔔 Hei, du er tildelt oppgaven " + str(timeslot) + ". Du vil få en påminnelse to timer før oppsatt tidspunkt.")
         return redirect("/timeslots_user/" + str(timeslot.id) + "/addsearch")
 
 
@@ -229,6 +234,7 @@ def register_attendance(request, timeslot_id):
                     attendance = CheckInUserTaskTimeSlot(user=user, timeslot=timeslot)
                     attendance.save()
                     context = {"timeslot": timeslot, "form": form, "alerts": [{"text": "User checked in!", "color": "success"}]}
+                    send_message_to_user(user, "✅ Ditt oppmøte for oppgaven " + str(timeslot) + " er registrert. Takk for innsatsen!")
             else:
                 context = {"timeslot": timeslot, "form": form, "alerts": [{"text": "Duplicate attendance!", "color": "warning"}]}
         except:

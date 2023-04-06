@@ -29,9 +29,6 @@ DEBUG = os.environ.get("DEBUG", False)
 ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "127.0.0.1").split(" ")
 CSRF_TRUSTED_ORIGINS = os.environ.get("CSRF_TRUSTED_ORIGINS", "http://127.0.0.1").split(" ")
 
-USE_TZ = True
-TIME_ZONE = 'Europe/Oslo'
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -123,7 +120,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Oslo'
 
 USE_I18N = True
 
@@ -182,3 +179,6 @@ LOGIN_REDIRECT_URL = '/'
 DATETIME_FORMAT = "Y-m-d H:M:S"
 TIME_FORMAT = "H:M:S"
 SHORT_DATETIME_FORMAT = "m/d/Y H:M:S"
+
+# Slack
+SLACK_CLIENT_TOKEN = os.environ.get("SLACK_CLIENT_TOKEN")
