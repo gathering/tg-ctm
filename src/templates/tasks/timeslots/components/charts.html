@@ -1,0 +1,28 @@
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+  <div class="p-4 rounded-lg">
+    <canvas id="chart-attendance"></canvas>
+  </div>
+  <div class="p-4 rounded-lg">
+    <canvas id="chart-crew-comparison"></canvas>
+  </div>
+</div>
+
+<script>
+  let attendance, crewComparison;
+  window.addEventListener('DOMContentLoaded', () => {
+    const ctxAttendance = document.getElementById('chart-attendance').getContext('2d');
+    attendance = displayAttendanceChart(ctxAttendance, {
+      assigned: {{ timeslot.assigned_timeslots.all|length }},
+      checkedIn: {{ timeslot.checkins.all|length }} - {{ timeslot.extra_checkins.all|length }},
+      checkedInExtra: {{ timeslot.extra_checkins.all|length }},
+      noShows: {{ timeslot.no_shows.all|length }},
+      totalSlots: {{ timeslot.max_participants }}
+    });
+
+    const ctxCrewComparison = document.getElementById('chart-crew-comparison').getContext('2d');
+    crewComparison = displayCrewComparisonChart(ctxCrewComparison, [{% for assigned_timeslot in timeslot.assigned_timeslots.all %}
+      {% if assigned_timeslot.profile.crew_memberships.all|length > 1 %}"Multi-crew"{% else %}"{% firstof assigned_timeslot.profile.crew_memberships.all.0.team assigned_timeslot.profile.crew_memberships.all.0.crew %}"{% endif %},
+    {% endfor %}]);
+  });
+</script>
+{% load static %}

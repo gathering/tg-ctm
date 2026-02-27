@@ -1,0 +1,191 @@
+{% extends "base.html" %}
+
+{% block title %}Sjekk inn tidsrom #{{ timeslot.id }}{% endblock %}
+
+{% block content %}
+  <div class="full-header-underline">
+    <h1>Sjekk inn tidsrom #{{ timeslot.id }} for oppgave {{ timeslot.task.name }}</h1>
+    <div class="md:ml-auto">
+      <a class="button button-blue my-1 md:my-0 md:ml-2" onclick="window.history.back()">Tilbake</a>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div class="p-4 rounded-lg bg-background-secondary md:col-span-2 lg:col-span-1 grid grid-rows-1 grid-cols-2 lg:grid-rows-2 lg:grid-cols-1 gap-4">
+      <div id="status-start" class="flex flex-col items-center justify-center h-full gap-2 hidden">
+        <p class="text-xl font-semibold"></p>
+        <p class="text-3xl font-bold text-green-400"></p>
+      </div>
+      <div id="status-end" class="flex flex-col items-center justify-center h-full gap-2 hidden">
+        <p class="text-xl font-semibold"></p>
+        <p class="text-3xl font-bold text-green-400"></p>
+      </div>
+      <div id="status-result-amount" class="flex flex-col items-center justify-center h-full gap-2 hidden">
+        <p class="text-xl font-semibold"></p>
+        <p class="text-3xl font-bold text-green-400"></p>
+      </div>
+      <div id="status-result-percent" class="flex flex-col items-center justify-center h-full gap-2 hidden">
+        <p class="text-xl font-semibold"></p>
+        <p class="text-3xl font-bold text-green-400"></p>
+      </div>
+    </div>
+    <div class="p-4 rounded-lg bg-background-secondary md:col-span-2">{% include "./components/charts.html" %}</div>
+  </div>
+
+  <div id="scan" class="hidden md:flex flex-col lg:flex-row lg:items-center gap-4 mt-4">
+    <label for="rfid_scan" class="sr-only">RFID-skann:</label>
+    <input type="text" name="rfid_scan" id="rfid_scan" class="max-w-xs" placeholder="Skann RFID-brikken her" autofocus>
+    <span id="error-dot" class="hidden">
+      <span class="relative flex size-3">
+        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+        <span class="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+      </span>
+    </span>
+    <div id="scan-result" class="lg:col-span-2 w-full flex flex-row min-w-0 items-center">
+      <p class="flex-1 truncate"></p>
+      <div class="ml-auto shrink-0 hidden">
+        <button onclick="moveCurrentUser();" class="button button-green">Flytt bruker hit</button>
+      </div>
+    </div>
+  </div>
+
+  <h2>Crewmedlemmer tildelt</h2>
+  {% include "./components/crewlist.html" %}
+
+  <script>
+    const startDate = new Date("{{ timeslot.start_time.isoformat }}");
+    const endDate = new Date("{{ timeslot.end_time.isoformat }}");
+
+    const statusStart = document.getElementById("status-start");
+    const statusEnd = document.getElementById("status-end");
+    const statusResultAmount = document.getElementById("status-result-amount");
+    const statusResultPercent = document.getElementById("status-result-percent");
+
+    const rfidInput = document.getElementById("rfid_scan");
+    let selectedRfid = null;
+    rfidInput.addEventListener("keypress", async function(event) {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        selectedRfid = rfidInput.value;
+        await handleRfidScan(selectedRfid);
+        rfidInput.value = "";
+      }
+    });
+
+    const scanResult = document.getElementById("scan-result");
+    const scanResultErrorDot = document.getElementById("error-dot");
+    const scanResultText = scanResult.querySelector("p");
+    const scanResultAction = scanResult.querySelector("div");
+
+    async function handleRfidScan(rfid, force = false) {
+      console.log("RFID scanned: " + rfid);
+      const response = await fetch("{% url 'scan_rfid' timeslot.id 'rfid_placeholder' %}".replace("rfid_placeholder", rfid) + (force ? "?force=true" : ""));
+      const data = await response.json();
+
+      scanResultErrorDot.classList.toggle("hidden", data.success);
+
+      let text = "", color = "text-white", action = false;
+      switch (data.status) {
+        case "success":
+          text = `Sjekket inn ${data.profile}`;
+          color = "text-green-200";
+          attendance.updateData({ checkedIn: +1 })
+          updateResult();
+          break;
+        case "already_checked_in":
+          text = `Allerede sjekket inn ${data.profile}`;
+          color = "text-yellow-200";
+          break;
+        case "profile_not_found":
+          text = `Fant ingen med RFID ${rfid}`;
+          color = "text-red-200";
+          break;
+        case "assigned_other":
+          text = `${data.profile} er tildelt ${data.assigned_timeslot}`;
+          color = "text-yellow-200";
+          action = true;
+          break;
+        case "not_assigned":
+          text = `${data.profile} er ikke tildelt et tidsrom`;
+          color = "text-red-200";
+          action = true;
+          break;
+        case "moved":
+        case "created":
+          text = `${data.profile} er nå flyttet til dette tidsrommet`;
+          color = "text-green-200";
+          attendance.updateData({ checkedInExtra: +1 })
+          crewComparison.updateData({ [data.crew]: 1 });
+          updateResult();
+          break;
+        case "error":
+        default:
+          text = `En ukjent feil oppsto`;
+          color = "text-red-200";
+      }
+
+      scanResultText.textContent = text;
+      scanResultText.className = color;
+      scanResultAction.classList.toggle("hidden", !action);
+
+      if (data.success) reloadCrewlist();
+    }
+
+    async function moveCurrentUser() {
+      if (!selectedRfid) return;
+      await handleRfidScan(selectedRfid, true);
+    }
+
+    const interval = setInterval(updateStatus, 1000);
+    updateStatus();
+    updateResult();
+
+
+    function updateStatus() {
+      const now = new Date();
+      if (now > endDate) {
+        statusStart.classList.add("hidden");
+        statusEnd.classList.add("hidden");
+        updateResult();
+        statusResultAmount.classList.remove("hidden");
+        statusResultPercent.classList.remove("hidden");
+        return clearInterval(interval);
+      }
+
+      if (now < endDate) {
+        statusStart.querySelector("p:nth-child(1)").textContent = now < startDate ? "Starter om" : "Startet";
+        statusStart.querySelector("p:nth-child(2)").textContent = now < startDate ? formatTimeDifference(startDate - now) : formatTimeDifference(now - startDate);
+        statusStart.classList.remove("hidden");
+        statusStart.classList[now > startDate ? "remove" : "add"]("col-span-2", "lg:col-span-1", "lg:row-span-2");
+      } else statusStart.classList.add("hidden");
+
+      if (now >= startDate && now <= endDate) {
+        statusEnd.querySelector("p:nth-child(1)").textContent = "Ferdig om";
+        statusEnd.querySelector("p:nth-child(2)").textContent = formatTimeDifference(endDate - now);
+        statusEnd.classList.remove("hidden");
+      } else statusEnd.classList.add("hidden");
+    }
+
+    function updateResult() {
+      const checkins = (attendance?.chartData.checkedIn || {{ timeslot.checkins.all|length }}) + (attendance?.chartData.checkedInExtra || 0);
+      const total = (attendance?.chartData.assigned || {{ timeslot.assigned_timeslots.all|length }});
+      console.log("Updating result:", checkins, total, attendance?.chartData);
+
+      statusResultAmount.querySelector("p:nth-child(1)").textContent = "Totalt sjekket inn";
+      statusResultAmount.querySelector("p:nth-child(2)").textContent = `${checkins} / ${total}`;
+
+      statusResultPercent.querySelector("p:nth-child(1)").textContent = "Prosent sjekket inn";
+      statusResultPercent.querySelector("p:nth-child(2)").textContent = `${total > 0 ? Math.round(checkins / total * 10_000) / 100 : 0}%`;
+    }
+
+    function formatTimeDifference(ms) {
+      const totalSeconds = Math.floor(ms / 1000);
+      const hours = Math.floor(totalSeconds / 3600);
+      const minutes = Math.floor((totalSeconds % 3600) / 60);
+      const seconds = totalSeconds % 60;
+      const minutesFormatted = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+      return hours > 0 ? `${hours}:${minutesFormatted}` : minutesFormatted;
+    }
+  </script>
+
+{% endblock %}

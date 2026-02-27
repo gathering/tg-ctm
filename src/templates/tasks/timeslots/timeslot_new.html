@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+
+{% block title %}Registrer nytt tidsrom{% endblock %}
+
+{% block content %}
+  <h1 class="header-underline">Registrer nytt tidsrom for oppgave {{ task.name }}</h1>
+
+  {% include "./components/form.html" %}
+{% endblock %}

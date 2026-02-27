@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block title %}Hjem{% endblock %}
+
+{% block content %}
+  <h2>Mine oppgaver</h2>
+  {% for assigned_timeslot in user.profile.assigned_timeslots.all %}
+    <h3>{% if assigned_timeslot.checkin %}✅{% elif assigned_timeslot.no_show %}❌{% else %}⏳{% endif %} {{ assigned_timeslot.timeslot.task.name }} - {{ assigned_timeslot.timeslot.start_time|date:"l j.M, \k\l H:i" }}</h3>
+    <p class="{% if assigned_timeslot.checkin or assigned_timeslot.no_show %}line-through italic{% endif %}">{{ assigned_timeslot.timeslot.task.description }}</p>
+  {% endfor %}
+
+  {% for membership, assigned_timeslots in chief_memberships %}
+    <h2>Oppgaver for {{ membership.crew }}</h2>
+    <table class="w-full alternate-row-table">
+      <thead>
+        <tr>
+          <th class="sr-only w-0">Sjekket inn</th>
+          <th>Crewmedlem</th>
+          <th>Oppgave</th>
+          <th>Tid</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for assigned_timeslot in assigned_timeslots %}
+          <tr>
+            <td class="w-0">{% if assigned_timeslot.checkin %}✅{% elif assigned_timeslot.no_show %}❌{% else %}⏳{% endif %}</td>
+            <td>{{ assigned_timeslot.profile }}</td>
+            <td>{{ assigned_timeslot.timeslot.task.name }}</td>
+            <td>{{ assigned_timeslot.timeslot.start_time|date:"l j.M, \k\l H:i" }} - {{ assigned_timeslot.timeslot.end_time|date:"H:i" }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% endfor %}
+
+  <h2>Kjøkken heatmap</h2>
+  <p>kommer!</p> <!-- todo: do this -->
+{% endblock %}

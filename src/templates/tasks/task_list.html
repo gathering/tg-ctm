@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}Oppgaver{% endblock %}
+
+{% block content %}
+  <div class="full-header-underline">
+    <h1>Oppgaver</h1>
+    <div class="md:ml-auto">
+      <a class="button button-green ml-2" href="{% url 'new_task' %}">Ny oppgave</a>
+    </div>
+  </div>
+
+  <table class="w-full table-auto alternate-row-table">
+    <thead>
+      <tr>
+        <th class="sr-only w-0 pr-1">Handling</th>
+        <th>Navn</th>
+        <th class="hidden lg:block">Beskrivelse</th>
+        <th>Tidsrom</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for task in tasks|dictsort:"name" %}
+        <tr class="[&>td]:max-w-xs">
+          <td class="text-nowrap w-0 pr-1">
+            <a href="{% url 'view_task' task.id %}" class="icon-button"><i class="fa-solid fa-external-link-square-alt"></i></a>
+          </td>
+          <td class="text-nowrap">{{ task.name }}</td>
+          <td class="truncate hidden lg:block">{{ task.description }}</td>
+          <td class="text-nowrap">{{ task.timeslots.all|length }}</td>
+        </tr>
+      {% empty %}
+        <tr>
+          <td colspan="4" class="empty-list-notice">Ingen oppgaver (tom liste)</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

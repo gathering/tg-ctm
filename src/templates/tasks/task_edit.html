@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+
+{% block title %}Rediger oppgave #{{ task.id }}{% endblock %}
+
+{% block content %}
+  <h1 class="header-underline">Rediger oppgave #{{ task.id }}: {{ task.name }}</h1>
+
+  {% include "./components/form.html" %}
+{% endblock %}

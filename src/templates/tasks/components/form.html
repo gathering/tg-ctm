@@ -1,0 +1,21 @@
+<form method="post">
+  {% csrf_token %}
+  <div>
+    <div>
+      <label for="name">Navn på oppgave*</label>
+      <input type="text" name="name" value="{{ task.name|default_if_none:'' }}" placeholder="{% firstof task.name random.name %}" required autofocus>
+    </div>
+    <div>
+      <label for="description">Beskrivelse</label>
+      <textarea name="description" placeholder="{% firstof task.description random.description %}">{{ task.description|default_if_none:'' }}</textarea>
+    </div>
+    <div>
+      <label for="send_reminders">Aktiver reminders på Slack?</label>
+      <div>
+        <input type="checkbox" name="send_reminders" {% if task.send_reminders %}checked{% endif %}>
+        <small class="text-gray-300 lg:ml-2">Dersom denne er krysset av, så vil brukeren motta påminnelser på Slack om oppgaven.</small>
+      </div>
+    </div>
+    <input type="submit" value="Lagre">
+  </div>
+</form>

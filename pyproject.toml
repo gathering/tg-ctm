@@ -1,0 +1,33 @@
+[project]
+name = "tg-ctm"
+version = "v26"
+description = ""
+authors = [{name = "Core:Systemstøtte", email = "support@tg.no"}]
+readme = "README.md"
+requires-python = ">=3.13,<4.0.0"
+dependencies = [
+    "django (>=6.0.2,<7.0.0)",
+    "django-allauth (>=65.14.1,<66.0.0)",
+    "django-guardian (>=3.2.0,<4.0.0)",
+    "social-auth-app-django (>=5.7.0,<6.0.0)",
+    "social-auth-core (>=4.8.5,<5.0.0)",
+    "gunicorn (>=25.1.0,<26.0.0)",
+    "python-dotenv (>=1.2.1,<2.0.0)",
+    "django-tailwind (>=4.4.2,<5.0.0)",
+    "django-google-fonts (>=0.0.3,<0.0.4)",
+    "crispy-tailwind (>=1.0.3,<2.0.0)",
+    "django-crispy-forms (>=2.5,<3.0)",
+    "fontawesomefree (>=6.6.0,<7.0.0)",
+    "psycopg2-binary (>=2.9.11,<3.0.0)",
+    "timeloop (>=1.0.2,<2.0.0)",
+    "django-chartjs (>=2.3.0,<3.0.0)",
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+
+[tool.poetry]
+package-mode = false

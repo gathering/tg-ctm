@@ -1,0 +1,18 @@
+<form method="post">
+  {% csrf_token %}
+  <div>
+    <div>
+      <label for="start_time">Startdato*</label>
+      <input type="datetime-local" name="start_time" value="{{ timeslot.start_time|date:'Y-m-d\TH:i'|default_if_none:'' }}" required autofocus>
+    </div>
+    <div>
+      <label for="end_time">Sluttdato*</label>
+      <input type="datetime-local" name="end_time" value="{{ timeslot.end_time|date:'Y-m-d\TH:i'|default_if_none:'' }}" required>
+    </div>
+    <div>
+      <label for="max_participants">Antall deltagere</label>
+      <input type="number" name="max_participants" value="{{ timeslot.max_participants|default_if_none:'' }}" placeholder="{% firstof timeslot.max_participants "" %}">
+    </div>
+    <input type="submit" value="Lagre">
+  </div>
+</form>
