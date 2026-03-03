@@ -32,7 +32,10 @@
         button.classList.remove("button-red");
         button.classList.add("button-yellow");
       } else if (clicks === 2) {
-        fetch("{% url 'mark_noshows' timeslot.id %}")
+        fetch("{% url 'mark_noshows' timeslot.id %}", {
+          method: "POST",
+          headers: { "X-CSRFToken": getCsrfToken() },
+        })
           .then(response => {
             if (response.ok) {
               reloadCrewlist();

@@ -79,7 +79,13 @@
 
     async function handleRfidScan(rfid, force = false) {
       console.log("RFID scanned: " + rfid);
-      const response = await fetch("{% url 'scan_rfid' timeslot.id 'rfid_placeholder' %}".replace("rfid_placeholder", rfid) + (force ? "?force=true" : ""));
+      const body = new URLSearchParams();
+      if (force) body.set("force", "true");
+      const response = await fetch("{% url 'scan_rfid' timeslot.id 'rfid_placeholder' %}".replace("rfid_placeholder", rfid), {
+        method: "POST",
+        headers: { "X-CSRFToken": getCsrfToken() },
+        body: body,
+      });
       const data = await response.json();
 
       scanResultErrorDot.classList.toggle("hidden", data.success);

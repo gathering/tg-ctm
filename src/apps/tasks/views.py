@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required, permission_required
+from django.views.decorators.http import require_POST
 
 from apps.tasks.utils import send_message_to_user
 from .random import get_random
@@ -118,6 +119,7 @@ def checkin_timeslot(request, timeslot_id): return render(request, 'tasks/timesl
 
 @login_required
 @permission_required('tasks.add_timeslotcheckin')
+@require_POST
 def scan_rfid(request, timeslot_id, rfid):
   timeslot = Timeslot.objects.get(id=timeslot_id)
   tgbt = TGBT()
@@ -131,7 +133,7 @@ def scan_rfid(request, timeslot_id, rfid):
     if not assigned_this.exists():
       assigned_other = AssignedTimeslot.objects.filter(profile=profile, timeslot__task=timeslot.task, no_show=False).exclude(timeslot=timeslot)
       assigned_other_exists = assigned_other.exists()
-      force = request.GET.get("force", "false") == "true"
+      force = request.POST.get("force", "false") == "true"
       if assigned_other_exists or force:
         if force:
           if assigned_other_exists: assigned_other.delete()
@@ -151,6 +153,7 @@ def scan_rfid(request, timeslot_id, rfid):
 
 @login_required
 @permission_required('tasks.change_assignedtimeslot')
+@require_POST
 def mark_noshows(request, timeslot_id):
   timeslot = Timeslot.objects.get(id=timeslot_id)
   assigned = AssignedTimeslot.objects.filter(timeslot=timeslot, no_show=False)
@@ -190,10 +193,11 @@ def raw_crewlist(request, timeslot_id): return render(request, 'tasks/timeslots/
 
 @login_required
 @permission_required('tasks.add_assignedtimeslot')
+@require_POST
 def add_user_to_timeslot(request, timeslot_id, profile_id):
   timeslot = Timeslot.objects.get(id=timeslot_id)
   profile = Profile.objects.get(id=profile_id)
-  reassign = request.GET.get("reassign", "false") == "true"
+  reassign = request.POST.get("reassign", "false") == "true"
   if reassign:
     assigned_timeslot = AssignedTimeslot.objects.filter(profile=profile, timeslot__task=timeslot.task, no_show=False).first()
     if assigned_timeslot:
@@ -207,10 +211,11 @@ def add_user_to_timeslot(request, timeslot_id, profile_id):
 
 @login_required
 @permission_required('tasks.add_timeslotcheckin')
+@require_POST
 def check_in_user_to_timeslot(request, timeslot_id, profile_id):
   timeslot = Timeslot.objects.get(id=timeslot_id)
   profile = Profile.objects.get(id=profile_id)
-  remove = request.GET.get("remove", "false") == "true"
+  remove = request.POST.get("remove", "false") == "true"
   if remove:
     TimeslotCheckIn.objects.filter(profile=profile, timeslot=timeslot).delete()
     return JsonResponse({ "success": True, "status": "removed" })
@@ -221,6 +226,7 @@ def check_in_user_to_timeslot(request, timeslot_id, profile_id):
 
 @login_required
 @permission_required('tasks.delete_assignedtimeslot')
+@require_POST
 def remove_user_from_timeslot(request, timeslot_id, profile_id):
   timeslot = Timeslot.objects.get(id=timeslot_id)
   profile = Profile.objects.get(id=profile_id)
