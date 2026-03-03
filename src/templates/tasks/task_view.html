@@ -68,7 +68,7 @@
           <td class="text-nowrap">{{ crew }}</td>
           <td class="text-nowrap flex flex-row justify-between"><span class="w-1/3">{{ assigned }} / {{ members }}</span> <span class="w-2/3 pl-2">{{ percentage }}%</span></td>
           <td class="text-nowrap w-0 pr-1 text-xs text-right">
-            <a href="" class="button button-blue">Åpne</a>
+            <a href="{% url 'assign_task_from_crew' task.id crew.id %}" class="button button-blue">Åpne</a>
           </td>
         </tr>
         {% for team, team_members, team_assigned, team_percentage in teams %}

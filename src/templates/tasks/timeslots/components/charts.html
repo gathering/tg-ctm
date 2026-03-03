@@ -9,7 +9,7 @@
 
 <script>
   let attendance, crewComparison;
-  window.addEventListener('DOMContentLoaded', () => {
+  document.addEventListener('DOMContentLoaded', () => {
     const ctxAttendance = document.getElementById('chart-attendance').getContext('2d');
     attendance = displayAttendanceChart(ctxAttendance, {
       assigned: {{ timeslot.assigned_timeslots.all|length }},

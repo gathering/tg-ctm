@@ -32,7 +32,7 @@ def view_task(request, task_id):
   return render(request, 'tasks/task_view.html', { "task": task, "crews": crews })
 
 @login_required
-@permission_required('tasks.add_timeslot')
+@permission_required('tasks.add_assignedtimeslot')
 def assign_task_from_crew(request, task_id, crew_id):
   task = Task.objects.get(id=task_id)
   crew = Crew.objects.get(id=crew_id)
@@ -95,48 +95,7 @@ def view_timeslots(request): return render(request, 'tasks/timeslots/timeslot_li
 def view_timeslot(request, timeslot_id): return render(request, 'tasks/timeslots/timeslot_view.html', { "timeslot": Timeslot.objects.get(id=timeslot_id) })
 
 @login_required
-@permission_required('tasks.change_timeslot')
-def edit_timeslot(request, timeslot_id):
-  timeslot = Timeslot.objects.get(id=timeslot_id)
-  if request.POST:
-    fields = {
-      "max_participants": request.POST.get("max_participants"),
-      "start_time": request.POST.get("start_time"),
-      "end_time": request.POST.get("end_time"),
-    }
-    for key, value in fields.items():
-      if value != getattr(timeslot, key):
-        setattr(timeslot, key, value)
-    timeslot.save()
-    return redirect(reverse("view_timeslot", args=[timeslot_id]))
-  return render(request, 'tasks/timeslots/timeslot_edit.html', { "timeslot": timeslot })
-
-@login_required
-@permission_required('tasks.delete_timeslot')
-def delete_timeslot(request, timeslot_id):
-  Timeslot.objects.get(id=timeslot_id).delete()
-  return redirect(reverse("view_timeslots"))
-
-@login_required
-@permission_required('tasks.add_timeslot')
-def new_timeslot(request, task_id):
-  task = Task.objects.get(id=task_id)
-  if request.POST:
-    timeslot = Timeslot.objects.create(
-      task=task,
-      max_participants=request.POST.get("max_participants"),
-      start_time=request.POST.get("start_time"),
-      end_time=request.POST.get("end_time")
-    )
-    return redirect(reverse("view_timeslot", args=[timeslot.id]))
-  return render(request, 'tasks/timeslots/timeslot_new.html', { "task": task })
-
-@login_required
-@permission_required('tasks.edit_timeslot')
-def checkin_timeslot(request, timeslot_id): return render(request, 'tasks/timeslots/timeslot_checkin.html', { "timeslot": Timeslot.objects.get(id=timeslot_id) })
-
-@login_required
-@permission_required('tasks.edit_timeslot')
+@permission_required('tasks.add_assignedtimeslot')
 def assign_timeslot(request, timeslot_id):
   timeslot = Timeslot.objects.get(id=timeslot_id)
   profiles_and_actions = [(
@@ -150,7 +109,11 @@ def assign_timeslot(request, timeslot_id):
   return render(request, 'tasks/timeslots/timeslot_assign.html', { "timeslot": timeslot, "profiles_and_actions": profiles_and_actions })
 
 @login_required
-@permission_required('tasks.edit_timeslot')
+@permission_required('tasks.add_timeslotcheckin')
+def checkin_timeslot(request, timeslot_id): return render(request, 'tasks/timeslots/timeslot_checkin.html', { "timeslot": Timeslot.objects.get(id=timeslot_id) })
+
+@login_required
+@permission_required('tasks.add_timeslotcheckin')
 def scan_rfid(request, timeslot_id, rfid):
   timeslot = Timeslot.objects.get(id=timeslot_id)
   tgbt = TGBT()
@@ -183,11 +146,46 @@ def scan_rfid(request, timeslot_id, rfid):
     return JsonResponse({ "success": False, "status": "error" })
 
 @login_required
+@permission_required('tasks.change_assignedtimeslot')
+def mark_noshows(request, timeslot_id):
+  timeslot = Timeslot.objects.get(id=timeslot_id)
+  assigned = AssignedTimeslot.objects.filter(timeslot=timeslot, no_show=False)
+  for assignment in assigned:
+    if not TimeslotCheckIn.objects.filter(profile=assignment.profile, timeslot=timeslot).exists():
+      assignment.no_show = True
+      assignment.save()
+      if timeslot.task.send_reminders: send_message_to_user(assignment.profile.user, f"❗ Du er fjernet fra oppgaven `{timeslot}` grunnet manglende oppmøte. Spør din chief hvis du lurer på noe.")
+  return JsonResponse({ "success": True })
+
+@login_required
+@permission_required('tasks.change_timeslot')
+def edit_timeslot(request, timeslot_id):
+  timeslot = Timeslot.objects.get(id=timeslot_id)
+  if request.POST:
+    fields = {
+      "max_participants": request.POST.get("max_participants"),
+      "start_time": request.POST.get("start_time"),
+      "end_time": request.POST.get("end_time"),
+    }
+    for key, value in fields.items():
+      if value != getattr(timeslot, key):
+        setattr(timeslot, key, value)
+    timeslot.save()
+    return redirect(reverse("view_timeslot", args=[timeslot_id]))
+  return render(request, 'tasks/timeslots/timeslot_edit.html', { "timeslot": timeslot })
+
+@login_required
+@permission_required('tasks.delete_timeslot')
+def delete_timeslot(request, timeslot_id):
+  Timeslot.objects.get(id=timeslot_id).delete()
+  return redirect(reverse("view_timeslots"))
+
+@login_required
 @permission_required('tasks.view_timeslot')
 def raw_crewlist(request, timeslot_id): return render(request, 'tasks/timeslots/components/crewlist.html', { "timeslot": Timeslot.objects.get(id=timeslot_id), "raw": True })
 
 @login_required
-@permission_required('tasks.edit_timeslot')
+@permission_required('tasks.add_assignedtimeslot')
 def add_user_to_timeslot(request, timeslot_id, profile_id):
   timeslot = Timeslot.objects.get(id=timeslot_id)
   profile = Profile.objects.get(id=profile_id)
@@ -204,17 +202,7 @@ def add_user_to_timeslot(request, timeslot_id, profile_id):
   return JsonResponse({ "success": True })
 
 @login_required
-@permission_required('tasks.edit_timeslot')
-def remove_user_from_timeslot(request, timeslot_id, profile_id):
-  timeslot = Timeslot.objects.get(id=timeslot_id)
-  profile = Profile.objects.get(id=profile_id)
-  AssignedTimeslot.objects.filter(profile=profile, timeslot=timeslot).delete()
-  TimeslotCheckIn.objects.filter(profile=profile, timeslot=timeslot).delete()
-  if timeslot.task.send_reminders: send_message_to_user(profile.user, f"❕ Du er fjernet fra oppgaven `{timeslot}`. Spør din chief hvis du lurer på noe.")
-  return JsonResponse({ "success": True })
-
-@login_required
-@permission_required('tasks.edit_timeslot')
+@permission_required('tasks.add_timeslotcheckin')
 def check_in_user_to_timeslot(request, timeslot_id, profile_id):
   timeslot = Timeslot.objects.get(id=timeslot_id)
   profile = Profile.objects.get(id=profile_id)
@@ -228,13 +216,25 @@ def check_in_user_to_timeslot(request, timeslot_id, profile_id):
   return JsonResponse({ "success": True })
 
 @login_required
-@permission_required('tasks.edit_timeslot')
-def mark_noshows(request, timeslot_id):
+@permission_required('tasks.delete_assignedtimeslot')
+def remove_user_from_timeslot(request, timeslot_id, profile_id):
   timeslot = Timeslot.objects.get(id=timeslot_id)
-  assigned = AssignedTimeslot.objects.filter(timeslot=timeslot, no_show=False)
-  for assignment in assigned:
-    if not TimeslotCheckIn.objects.filter(profile=assignment.profile, timeslot=timeslot).exists():
-      assignment.no_show = True
-      assignment.save()
-      if timeslot.task.send_reminders: send_message_to_user(assignment.profile.user, f"❗ Du er fjernet fra oppgaven `{timeslot}` grunnet manglende oppmøte. Spør din chief hvis du lurer på noe.")
+  profile = Profile.objects.get(id=profile_id)
+  AssignedTimeslot.objects.filter(profile=profile, timeslot=timeslot).delete()
+  TimeslotCheckIn.objects.filter(profile=profile, timeslot=timeslot).delete()
+  if timeslot.task.send_reminders: send_message_to_user(profile.user, f"❕ Du er fjernet fra oppgaven `{timeslot}`. Spør din chief hvis du lurer på noe.")
   return JsonResponse({ "success": True })
+
+@login_required
+@permission_required('tasks.add_timeslot')
+def new_timeslot(request, task_id):
+  task = Task.objects.get(id=task_id)
+  if request.POST:
+    timeslot = Timeslot.objects.create(
+      task=task,
+      max_participants=request.POST.get("max_participants"),
+      start_time=request.POST.get("start_time"),
+      end_time=request.POST.get("end_time")
+    )
+    return redirect(reverse("view_timeslot", args=[timeslot.id]))
+  return render(request, 'tasks/timeslots/timeslot_new.html', { "task": task })

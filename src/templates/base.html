@@ -21,7 +21,7 @@
               <span class="web-only">Oppgaver</span>
             </a></li>
           {% endif %}
-          {% if perms.tasks.view_timeslots %}
+          {% if perms.tasks.view_timeslot %}
             <li><a href="{% url "view_timeslots" %}" class="flex flex-col pwa:items-center pwa:gap-1">
               <span class="pwa-only"><i class="fa-solid fa-business-time"></i></span>
               <span class="pwa-only text-neutral-400">Tidsrom</span>

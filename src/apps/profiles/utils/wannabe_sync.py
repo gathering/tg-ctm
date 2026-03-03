@@ -41,7 +41,7 @@ def sync():
       full_name = remove_emojis(user['profile']['name'])
       first_name, last_name = str(full_name).rsplit(' ', 1)
 
-      if not Profile.objects.filter(wannabe_id=user['user_id']).exists() or not User.objects.filter(email=user['profile']['email']).exists():
+      if not User.objects.filter(email=user['profile']['email']).exists():
         new_user = User.objects.create(
           username=user['profile']['email'],
           email=user['profile']['email'],
