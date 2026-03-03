@@ -49,6 +49,7 @@ def edit_task(request, task_id):
       "name": request.POST.get("name"),
       "description": request.POST.get("description"),
       "send_reminders": request.POST.get("send_reminders") == "on",
+      "reminder_info": request.POST.get("reminder_info"),
     }
     for key, value in fields.items():
       if value != getattr(task, key):
@@ -59,7 +60,8 @@ def edit_task(request, task_id):
     "task": task,
     "random": {
       "name": get_random("task_name"),
-      "description": get_random("task_description")
+      "description": get_random("task_description"),
+      "reminder_info": get_random("reminder_info"),
     }
   })
 
@@ -76,13 +78,15 @@ def new_task(request):
     task = Task.objects.create(
       name=request.POST.get("name"),
       description=request.POST.get("description"),
-      send_reminders=request.POST.get("send_reminders") == "on"
+      send_reminders=request.POST.get("send_reminders") == "on",
+      reminder_info=request.POST.get("reminder_info"),
     )
     return redirect(reverse("view_task", args=[task.id]))
   return render(request, 'tasks/task_new.html', {
     "random": {
       "name": get_random("task_name"),
-      "description": get_random("task_description")
+      "description": get_random("task_description"),
+      "reminder_info": get_random("reminder_info"),
     }
   })
 
