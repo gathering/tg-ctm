@@ -1,0 +1,17 @@
+{% extends 'skeleton.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Logg inn{% endblock %}
+
+{% block body %}
+  <body>
+    <main class="w-full max-w-2xl mx-auto px-4">
+      <h1 class="text-4xl mt-16">Logg inn til {{ settings.APP_NAME }}</h1>
+      <form method="post" class="my-8">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <button type="submit" class="w-full">Logg inn</button>
+      </form>
+    </main>
+  </body>
+{% endblock %}

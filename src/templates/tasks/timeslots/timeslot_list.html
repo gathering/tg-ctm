@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}Tidsrom{% endblock %}
+
+{% block content %}
+  <h1 class="header-underline">Alle tidsrom</h1>
+
+  <table class="w-full table-auto alternate-row-table">
+    <thead>
+      <tr>
+        <th class="sr-only w-0 pr-1">Handling</th>
+        <th>Oppgave</th>
+        <th>Tid</th>
+        <th>Tildelt</th>
+        <th>Oppmøte</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for timeslot in timeslots|dictsort:"start_time" %}
+        <tr class="[&>td]:max-w-xs {% if timeslot.start_time > now %}{% elif timeslot.end_time > now %}text-yellow-200 animate-pulse{% else %}text-green-200{% endif %}">
+          <td class="text-nowrap w-0 pr-1">
+            <a href="{% url 'view_timeslot' timeslot.id %}" class="icon-button"><i class="fa-solid fa-external-link-square-alt"></i></a>
+          </td>
+          <td class="text-nowrap">{{ timeslot.task.name }}</td>
+          <td class="text-nowrap">{{ timeslot.start_time|date:"l j.M, \k\l H:i" }} - {{ timeslot.end_time|date:"H:i" }}</td>
+          <td class="text-nowrap">{{ timeslot.assigned_timeslots.all|length }} / {% if timeslot.max_participants %}{{ timeslot.max_participants }} ({% widthratio timeslot.assigned_timeslots.all|length timeslot.max_participants 100 %}%){% else %}∞{% endif %}</td>
+          <td class="text-nowrap">{{ timeslot.checkins.all|length }} / {{ timeslot.assigned_timeslots.all|length }} ({% widthratio timeslot.checkins.all|length timeslot.assigned_timeslots.all|length 100 %}%)</td>
+        </tr>
+      {% empty %}
+        <tr>
+          <td colspan="6" class="empty-list-notice">Ingen tidsrom (tom liste)</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

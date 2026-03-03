@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+
+{% block title %}Rediger tidsrom #{{ timeslot.id }}{% endblock %}
+
+{% block content %}
+  <h1 class="header-underline">Rediger tidsrom #{{ timeslot.id }} for oppgave {{ timeslot.task.name }}</h1>
+
+  {% include "./components/form.html" %}
+{% endblock %}

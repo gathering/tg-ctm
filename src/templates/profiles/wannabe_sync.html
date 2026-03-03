@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}Wannabe Sync{% endblock %}
+
+{% block head %} {% load static %}
+  <script src="{% static 'js/wannabe_sync.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+  <h1 class="header-underline">Wannabe Sync</h1>
+
+  <p>NB! Dette kan ta litt tid. Ikke forlat siden før den er ferdig.</p>
+
+  <button id="sync-button" class="button button-green" onclick="syncWannabe()">Sync Wannabe</button>
+
+  <span id="loading-indicator" class="ml-4 hidden">
+    <i class="fa-solid fa-circle-notch animate-spin text-3xl"></i>
+  </span>
+
+  <div id="sync-stats" class="mt-4 hidden">
+    <p><strong>Sync fullført!</strong></p>
+    <p>Nye brukere: <span id="stat-new-users"></span></p>
+    <p>Oppdaterte brukere: <span id="stat-updated-users"></span></p>
+    <p>Nye crew: <span id="stat-new-crews"></span></p>
+    <p>Oppdaterte crew: <span id="stat-updated-crews"></span></p>
+    <p>Slettede brukere: <span id="stat-deleted-users"></span></p>
+  </div>
+
+  <div id="error-block" class="mt-4 text-red-600 hidden">
+    <p><strong>Det skjedde en feil under sync:</strong></p>
+    <pre id="error-message" class="bg-gray-100 p-2 rounded"></pre>
+  </div>
+{% endblock %}

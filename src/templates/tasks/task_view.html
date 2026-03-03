@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block title %}Oppgave #{{ task.id }}{% endblock %}
+
+{% block content %}
+  <div class="full-header-underline">
+    <h1>Oppgave #{{ task.id }}: {{ task.name }}</h1>
+    <div class="md:ml-auto">
+      <a class="button button-blue my-1 md:my-0 md:ml-2" href="{% url 'edit_task' task.id %}">Rediger</a>
+    </div>
+  </div>
+
+  <p class="whitespace-pre-wrap">{{ task.description }}</p>
+
+  <div class="full-header-underline">
+    <h2 class="no-header-underline">Tidsrom</h2>
+    <div class="md:ml-auto">
+      <a class="button button-green my-1 md:my-0 md:ml-2" href="{% url 'new_timeslot' task.id %}">Nytt tidsrom</a>
+    </div>
+  </div>
+
+  <table class="w-full table-auto alternate-row-table">
+    <thead>
+      <tr>
+        <th class="sr-only w-0 pr-1">Status</th>
+        <th class="hidden lg:table-cell">Startdato</th>
+        <th class="hidden lg:table-cell">Sluttdato</th>
+        <th class="table-cell lg:hidden">Dato</th>
+        <th>Tildelt</th>
+        <th class="hidden md:table-cell">Oppmøte</th>
+        <th class="sr-only w-0 pr-1">Handling</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for timeslot in task.timeslots.all|dictsort:"start_time" %}
+        <tr class="[&>td]:max-w-xs {% if timeslot.start_time > now %}{% elif timeslot.end_time > now %}text-yellow-200 animate-pulse{% else %}text-green-200{% endif %}">
+          <td class="text-nowrap w-0 pr-1">{% if timeslot.start_time > now %}⏳{% elif timeslot.end_time > now %}▶️{% else %}✅{% endif %}</td>
+          <td class="text-nowrap hidden lg:table-cell">{{ timeslot.start_time|date:"l j.M, \k\l H:i" }}</td>
+          <td class="text-nowrap hidden lg:table-cell">{{ timeslot.end_time|date:"l j.M, \k\l H:i" }}</td>
+          <td class="text-nowrap table-cell lg:hidden">{{ timeslot.start_time|date:"l j.M, \k\l H:i" }} - {{ timeslot.end_time|date:"H:i" }}</td>
+          <td class="text-nowrap">{{ timeslot.assigned_timeslots.all|length }} / {{ timeslot.max_participants }} ({% widthratio timeslot.assigned_timeslots.all|length timeslot.max_participants 100 %}%)</td>
+          <td class="text-nowrap hidden md:table-cell">{{ timeslot.checkins.all|length }} / {{ timeslot.assigned_timeslots.all|length }} ({% widthratio timeslot.checkins.all|length timeslot.assigned_timeslots.all|length 100 %}%)</td>
+          <td class="text-nowrap w-0 pr-1 text-xs text-right">
+            <a class="button button-green my-1 md:my-0 md:ml-2" href="{% url 'assign_timeslot' timeslot.id %}">Legg til</a>
+            <a class="button button-blue my-1 md:my-0 md:ml-2" href="{% url 'view_timeslot' timeslot.id %}">Åpne</a>
+          </td>
+        </tr>
+      {% empty %}
+        <tr>
+          <td colspan="5" class="empty-list-notice">Ingen oppgaver (tom liste)</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <h2>Crewfordeling</h2>
+  <table class="w-full table-auto alternate-row-table">
+    <thead>
+      <tr>
+        <th>Crew</th>
+        <th>Medlemmer tildelt</th>
+        <th class="sr-only w-0 pr-1">Handling</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for crew, members, assigned, percentage, teams in crews %}
+        <tr class="[&>td]:max-w-xs {% if percentage < 50 %}text-red-200{% elif percentage < 100 %}text-yellow-200{% else %}text-green-200{% endif %}">
+          <td class="text-nowrap">{{ crew }}</td>
+          <td class="text-nowrap flex flex-row justify-between"><span class="w-1/3">{{ assigned }} / {{ members }}</span> <span class="w-2/3 pl-2">{{ percentage }}%</span></td>
+          <td class="text-nowrap w-0 pr-1 text-xs text-right">
+            <a href="{% url 'assign_task_from_crew' task.id crew.id %}" class="button button-blue">Åpne</a>
+          </td>
+        </tr>
+        {% for team, team_members, team_assigned, team_percentage in teams %}
+          <tr class="[&>td]:max-w-xs {% if team_percentage < 50 %}text-red-200{% elif team_percentage < 100 %}text-yellow-200{% else %}text-green-200{% endif %}">
+            <td class="text-nowrap pl-4">{{ team }}</td>
+            <td class="text-nowrap flex flex-row justify-between"><span class="w-1/3">{{ team_assigned }} / {{ team_members }}</span> <span class="w-2/3 pl-2">{{ team_percentage }}%</span></td>
+            <td></td>
+          </tr>
+        {% endfor %}
+      {% empty %}
+        <tr>
+          <td colspan="5" class="empty-list-notice">Tom crewliste! Har du syncet Wannabe?</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

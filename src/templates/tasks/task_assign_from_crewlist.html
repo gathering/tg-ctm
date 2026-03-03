@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+
+{% block title %}Oppgave #{{ task.id }}: {{ task.name }} - {{ crew }}{% endblock %}
+
+{% block content %}
+  <h1 class="header-underline">Oppgave #{{ task.id }}: {{ task.name }} - {{ crew }}</h1>
+
+  <div class="flex flex-col items-end">
+    <label for="select_timeslot" class="sr-only">Velg tidsrom</label>
+    <input type="text" name="select_timeslot" id="select_timeslot" list="timeslots" class="max-w-lg min-w-1/3" placeholder="Velg tidsrom" autofocus>
+    <datalist id="timeslots">
+      {% for timeslot in task.timeslots.all|dictsort:"start_time" %}
+        <option value="{{ timeslot.start_time|date:"l j.M, \k\l H:i" }} - {{ timeslot.end_time|date:"H:i" }}">{{ timeslot.start_time|date:"l j.M, \k\l H:i" }} - {{ timeslot.end_time|date:"H:i" }}</option>
+      {% endfor %}
+    </datalist>
+  </div>
+
+  {% if crew_members_without_team|length %}
+    <table class="w-full table-auto alternate-row-table">
+      <thead>
+        <tr>
+          <th>Navn</th>
+          <th>Rolle</th>
+          <th>Tildelt</th>
+          <th class="sr-only w-0 pr-1">Handling</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for member, assigned_timeslot in crew_members_without_team %}
+          <tr class="[&>td]:max-w-xs {% if assigned_timeslot %}text-green-200{% else %}text-red-200{% endif %}">
+            <td class="text-nowrap">{{ member.profile }}</td>
+            <td class="text-nowrap">{{ member.title }}</td>
+            <td class="text-nowrap">{% if assigned_timeslot %}{{ assigned_timeslot.timeslot.start_time|date:"l j.M, \k\l H:i" }} - {{ assigned_timeslot.timeslot.end_time|date:"H:i" }}{% else %}Ikke tildelt{% endif %}</td>
+            <td class="text-nowrap w-0 pr-1 text-xs">
+              {% if assigned_timeslot %}
+                <button onclick="userRemove(this, {{ member.profile.id }}, {{ assigned_timeslot.timeslot.id }})" class="button button-red">Fjern</button>
+              {% else %}
+                <button onclick="userAssign(this, {{ member.profile.id }})" class="button button-green if-selected hidden">Tildel</button>
+              {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% endif %}
+
+
+  {% for team, team_members in crew_teams %}
+    <h2 class="header-underline">{{ team.name }}</h2>
+    <table class="w-full table-auto alternate-row-table">
+      <thead>
+        <tr>
+          <th>Navn</th>
+          <th>Rolle</th>
+          <th>Tildelt</th>
+          <th class="sr-only w-0 pr-1">Handling</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for member, assigned_timeslot in team_members %}
+          <tr class="[&>td]:max-w-xs {% if assigned_timeslot %}text-green-200{% else %}text-red-200{% endif %}">
+            <td class="text-nowrap">{{ member.profile }}</td>
+            <td class="text-nowrap">{{ member.title }}</td>
+            <td class="text-nowrap">{% if assigned_timeslot %}{{ assigned_timeslot.timeslot.start_time|date:"l j.M, \k\l H:i" }} - {{ assigned_timeslot.timeslot.end_time|date:"H:i" }}{% else %}Ikke tildelt{% endif %}</td>
+            <td class="text-nowrap w-0 pr-1 text-xs">
+              {% if assigned_timeslot %}
+                <button onclick="userRemove(this, {{ member.profile.id }}, {{ assigned_timeslot.timeslot.id }})" class="button button-red">Fjern</button>
+              {% else %}
+                <button onclick="userAssign(this, {{ member.profile.id }})" class="button button-green if-selected hidden">Tildel</button>
+              {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% endfor %}
+
+  <script>
+    const selectTimeslotInput = document.getElementById("select_timeslot");
+    const timeslotOptions = document.getElementById("timeslots").options;
+
+    let selectedTimeslot = null;
+    const timeslots = {
+      {% for timeslot in task.timeslots.all %}
+        "{{ timeslot.start_time|date:"l j.M, \k\l H:i" }} - {{ timeslot.end_time|date:"H:i" }}": {{ timeslot.id }},
+      {% endfor %}
+    };
+
+    selectTimeslotInput.addEventListener("input", () => {
+      const selectedOption = Array.from(timeslotOptions).find(option => option.value === selectTimeslotInput.value);
+      if (selectedOption) {
+        selectedTimeslot = selectedOption.value;
+        document.querySelectorAll(".if-selected").forEach(button => button.classList.remove("hidden"));
+      } else {
+        selectedTimeslot = null;
+        document.querySelectorAll(".if-selected").forEach(button => button.classList.add("hidden"));
+      }
+    });
+
+    function userRemove(button, profileId, timeslotId) {
+      fetch("{% url 'remove_user_from_timeslot' 9999 9998 %}".replace("/9999/", `/${timeslotId}/`).replace("/9998/", `/${profileId}/`), {
+        method: "POST",
+        headers: { "X-CSRFToken": getCsrfToken() },
+      })
+        .then(response => {
+          if (!response.ok) alert("Noe gikk galt ved fjerning av bruker fra tidsrom");
+          // don't reload as it's a long list
+          button.textContent = "Tildel";
+          button.classList.remove("button-red");
+          button.classList.add("button-green", "if-selected");
+          button.onclick = () => userAssign(button, profileId);
+          button.classList.toggle("hidden", !selectedTimeslot);
+          const assignedCell = button.parentElement.previousElementSibling;
+          assignedCell.textContent = "Ikke tildelt";
+          const row = button.parentElement.parentElement;
+          row.classList.remove("text-green-200");
+          row.classList.add("text-red-200");
+        })
+    }
+
+    function userAssign(button, profileId) {
+      fetch("{% url 'add_user_to_timeslot' 9999 9998 %}".replace("/9999/", `/${timeslots[selectedTimeslot]}/`).replace("/9998/", `/${profileId}/`), {
+        method: "POST",
+        headers: { "X-CSRFToken": getCsrfToken() },
+      })
+        .then(response => {
+          if (!response.ok) return alert("Noe gikk galt ved tildeling av bruker til tidsrom");
+          // don't reload as it's a long list
+          button.textContent = "Fjern";
+          button.classList.remove("button-green", "if-selected");
+          button.classList.add("button-red");
+          button.onclick = () => userRemove(button, profileId, timeslots[selectedTimeslot]);
+          const assignedCell = button.parentElement.previousElementSibling;
+          assignedCell.textContent = selectedTimeslot;
+          const row = button.parentElement.parentElement;
+          row.classList.remove("text-red-200");
+          row.classList.add("text-green-200");
+        })
+    }
+  </script>
+{% endblock %}

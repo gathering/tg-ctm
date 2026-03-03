@@ -1,0 +1,80 @@
+{% extends 'skeleton.html' %}
+
+{% block body %}
+  <body class="flex flex-col h-screen">
+    <header class="sticky top-0 z-50 bg-background-secondary px-3 py-2 text-white flex gap-3 items-center">
+      <button onclick="toggleSidebar();" class="web-only"><span class="font-emoji">🫶</span> {{ settings.APP_NAME }}</button>
+      <a href="{% url "index" %}" class="pwa-only" ><span class="font-emoji">🫶</span> {{ settings.APP_NAME }}</a>
+      {% if user.is_superuser %}
+        <a href="/admin" class="text-gray-400 h-full my-auto">Admin</a>
+      {% endif %}
+      <button id="pwa-button" onclick="showInstallPrompt();" aria-label="Installer app" class="text-green-600 h-full my-auto cursor-pointer ml-auto hidden"><i class="fa-solid fa-download"></i></button>
+    </header>
+    <div class="flex flex-row flex-1 overflow-hidden pwa:flex-col">
+      <div id="sidebar" class="bg-background-secondary w-48 hidden opacity-0 md:flex md:opacity-100 md:flex-col transition-opacity pwa:fixed pwa:bottom-0 pwa:left-0 pwa:right-0 pwa:w-full pwa:h-auto pwa:flex pwa:opacity-100 pwa:flex-row pwa:z-50">
+        <ul class="flex flex-col gap-2 py-2 px-3 [&>li>a]:whitespace-nowrap pwa:flex-row pwa:justify-around pwa:gap-0 w-full">
+          <li class="web-only"><a href="{% url "index" %}">Hjem</a></li>
+          {% if perms.tasks.view_task %}
+            <li><a href="{% url "view_tasks" %}" class="flex flex-col pwa:items-center pwa:gap-1">
+              <span class="pwa-only"><i class="fa-solid fa-list-check"></i></span>
+              <span class="pwa-only text-neutral-400">Oppgaver</span>
+              <span class="web-only">Oppgaver</span>
+            </a></li>
+          {% endif %}
+          {% if perms.tasks.view_timeslot %}
+            <li><a href="{% url "view_timeslots" %}" class="flex flex-col pwa:items-center pwa:gap-1">
+              <span class="pwa-only"><i class="fa-solid fa-business-time"></i></span>
+              <span class="pwa-only text-neutral-400">Tidsrom</span>
+              <span class="web-only">Tidsrom</span>
+            </a></li>
+          {% endif %}
+          {% if user.is_superuser %}
+            <li><a href="{% url "wannabe_sync" %}" class="flex flex-col pwa:items-center pwa:gap-1">
+              <span class="pwa-only"><i class="fa-solid fa-rotate"></i></span>
+              <span class="pwa-only text-neutral-400">Synk</span>
+              <span class="web-only">Synk. Wannabe</span>
+            </a></li>
+          {% endif %}
+        </ul>
+
+      </div>
+      <div class="flex-1 overflow-y-auto scrollbar py-2 px-4">
+        <main class="mx-auto max-w-5xl md:py-6 pwa:pb-16">
+          {% block content %}
+            <h1>{{ settings.APP_NAME }}</h1>
+            <p class="text-justify">{% lorem 9 b random %}</p>
+          {% endblock %}
+        </main>
+      </div>
+    </div>
+  </body>
+  <script>
+    function getCsrfToken() {
+      const match = document.cookie.match(/(?:^|;\s*)csrftoken=([^;]+)/);
+      return match ? decodeURIComponent(match[1]) : '';
+    }
+
+    function toggleSidebar() {
+      const sidebar = document.getElementById("sidebar");
+      if (sidebar.classList.contains("opacity-0")) sidebar.classList.remove("hidden", "opacity-0") && sidebar.classList.add("opacity-100");
+      else sidebar.classList.add("opacity-0") && sidebar.classList.remove("opacity-100") && setTimeout(() => sidebar.classList.add("hidden"), 150);
+    }
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      const installBtn = document.getElementById('pwa-button');
+      installBtn.classList.remove('hidden');
+      installBtn.onclick = () => {
+        e.prompt();
+        e.userChoice.then((choiceResult) => {
+          if (choiceResult.outcome === 'accepted') {
+            console.log('User accepted the install prompt');
+          } else {
+            console.log('User dismissed the install prompt');
+          }
+          installBtn.classList.add('hidden');
+        });
+      };
+    });
+  </script>
+{% endblock %}

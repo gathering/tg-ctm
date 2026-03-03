@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}Tidsrom #{{ timeslot.id }}{% endblock %}
+
+{% block content %}
+  <div class="full-header-underline">
+    <h1>Tidsrom #{{ timeslot.id }} for oppgave {{ timeslot.task.name }}</h1>
+    <div class="md:ml-auto">
+      <a class="button button-blue my-1 md:my-0 md:ml-2" href="{% url 'checkin_timeslot' timeslot.id %}">Sjekk inn</a>
+      <a class="button button-blue my-1 md:my-0 md:ml-2" href="{% url 'edit_timeslot' timeslot.id %}">Rediger</a>
+    </div>
+  </div>
+
+  {% include "./components/charts.html" %}
+
+  <div class="full-header-underline">
+    <h2 class="no-header-underline">Crewmedlemmer tildelt</h2>
+    <div class="md:ml-auto">
+      <button onclick="dangerousButton(this)" class="button button-red my-1 md:my-0 md:ml-2">Marker manglende som no-show</button>
+      <a class="button button-green my-1 md:my-0 md:ml-2" href="{% url 'assign_timeslot' timeslot.id %}">Legg til</a>
+    </div>
+  </div>
+
+  {% include "./components/crewlist.html" %}
+
+  <script>
+    let clicks = 0;
+    function dangerousButton(button) {
+      clicks += 1;
+      if (clicks === 1) {
+        button.textContent = "Er du sikker? (klikk igjen for å bekrefte)";
+        button.classList.remove("button-red");
+        button.classList.add("button-yellow");
+      } else if (clicks === 2) {
+        fetch("{% url 'mark_noshows' timeslot.id %}", {
+          method: "POST",
+          headers: { "X-CSRFToken": getCsrfToken() },
+        })
+          .then(response => {
+            if (response.ok) {
+              reloadCrewlist();
+              button.classList.add("hidden");
+              try {
+                const noshowCount = attendance.chartData.assigned - attendance.chartData.checkedIn - attendance.chartData.checkedInExtra - attendance.chartData.noShows;
+                attendance.updateData({ attendance: -noshowCount, noShows: +noshowCount });
+                updateResult();
+              } catch(e) {}
+            } else console.error("Failed to mark no-shows:", response);
+          })
+      }
+    }
+  </script>
+{% endblock %}

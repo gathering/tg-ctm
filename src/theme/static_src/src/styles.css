@@ -1,0 +1,104 @@
+@import "tailwindcss";
+@source "../../../**/*.{html,py,js}";
+@plugin "@tailwindcss/aspect-ratio";
+@plugin "@tailwindcss/forms";
+@plugin "@tailwindcss/typography";
+@config "./tailwind.config.js";
+
+/* Colors and fonts */
+@theme {
+  --color-background: #0E0F16;
+  --color-background-secondary: #131518;
+  --font-emoji: "Noto Color Emoji";
+}
+
+/* Custom PWA variants */
+@custom-variant any-pwa (@media (display-mode: standalone));
+@custom-variant pwa (@media (max-width: 48rem) and (display-mode: standalone));
+
+/* Base styles */
+@layer base {
+  body                   { @apply bg-background text-white; }
+  h1, h2, h3, h4, h5, h6 { @apply pt-3 pb-2 mb-2; }
+  h1                     { @apply text-3xl font-bold; }
+  h2                     { @apply text-2xl font-semibold; }
+  h3                     { @apply text-xl font-semibold; }
+}
+
+/* Component styles */
+@layer utilities {
+    input:where([type="text"], [type="number"], [type="password"]), input:where([type="date"]), input:where([type="datetime-local"]), input:where([type="time"]), textarea {
+      @apply bg-background-secondary rounded-lg py-1 my-1 px-2;
+  } textarea {
+      @apply h-32;
+  } input:where([type="submit"]), button:where([type="submit"]) {
+      @apply bg-green-500 hover:bg-green-600 rounded-lg py-1 my-1 px-2;
+  } input:where([type="checkbox"]) {
+      @apply w-5! h-5! text-green-500 bg-background-secondary rounded focus:ring-green-500 border-gray-300;
+  } input:where([type="date"]), input:where([type="datetime-local"]), input:where([type="time"]) {
+      &::-webkit-calendar-picker-indicator {
+        @apply filter invert brightness-150;
+      }
+  } input:where([type="number"]) {
+      &::-webkit-inner-spin-button, &::-webkit-outer-spin-button {
+        @apply appearance-none;
+      }
+  } form {
+      @apply px-2 py-3 my-3;
+      &>div {
+        @apply flex flex-col mx-auto gap-5;
+        &>div {
+          @apply flex flex-col lg:flex-row lg:items-center;
+          &>* { @apply w-full; }
+          &>label { @apply lg:w-1/5 text-lg; }
+        }
+      }
+  } th {
+      @apply font-bold text-left;
+  }
+}
+
+/* Custom utility components */
+h2, .header-underline { @apply border-b border-white; }
+.no-header-underline { @apply border-b-0; }
+.full-header-underline { @apply border-b border-white pt-3 pb-2 mb-2 flex flex-col gap-2 md:flex-row items-center; }
+
+/* Custom buttons */
+.icon-button       { @apply transition-colors hover:text-blue-400; }
+.icon-button-green { @apply transition-colors hover:text-green-400 text-green-200; }
+.icon-button-yellow { @apply transition-colors hover:text-yellow-400 text-yellow-200; }
+.icon-button-red   { @apply transition-colors hover:text-red-400 text-red-200; }
+
+.button       { @apply rounded-lg py-1 px-2 my-0 whitespace-nowrap cursor-pointer; }
+.button-green { @apply text-white bg-green-500 hover:bg-green-600; }
+.button-yellow { @apply text-black bg-yellow-500 hover:bg-yellow-600; }
+.button-blue  { @apply text-white bg-blue-500  hover:bg-blue-600; }
+.button-red   { @apply text-white bg-red-500   hover:bg-red-600; }
+
+/* PWA controlling */
+.pwa-only { @apply hidden pwa:block; }
+.web-only { @apply block pwa:hidden; }
+
+/* Misc. */
+.sleep-activity { @apply px-2 inline-flex text-xs leading-5 font-semibold rounded-full border; }
+.empty-list-notice { @apply text-center italic py-10 text-3xl sm:text-4xl lg:text-6xl; }
+
+.key-value-table {
+  tr {
+    td:nth-child(1) { @apply text-right font-bold p-2 w-1 whitespace-nowrap; }
+    td:nth-child(2) { @apply text-left p-2; }
+  }
+}
+
+.alternate-row-table {
+  tbody>tr:nth-child(odd) { @apply bg-background-secondary; }
+}
+
+/* Scrollbar */
+.scrollbar {
+  @apply [scrollbar-width:thin] [scrollbar-color:var(--color-background-secondary)_transparent];
+  &::-webkit-scrollbar { @apply w-2; }
+  &::-webkit-scrollbar-track { @apply bg-transparent; }
+  &::-webkit-scrollbar-thumb { @apply bg-background-secondary/70 rounded border-2 border-solid border-transparent bg-clip-content; }
+  &::-webkit-scrollbar-thumb:hover { @apply bg-background-secondary/90 bg-clip-content; }
+}
