@@ -23,7 +23,7 @@
           </td>
           <td class="text-nowrap">{{ timeslot.task.name }}</td>
           <td class="text-nowrap">{{ timeslot.start_time|date:"l j.M, \k\l H:i" }} - {{ timeslot.end_time|date:"H:i" }}</td>
-          <td class="text-nowrap">{{ timeslot.assigned_timeslots.all|length }} / {{ timeslot.max_participants }} ({% widthratio timeslot.assigned_timeslots.all|length timeslot.max_participants 100 %}%)</td>
+          <td class="text-nowrap">{{ timeslot.assigned_timeslots.all|length }} / {% if timeslot.max_participants %}{{ timeslot.max_participants }} ({% widthratio timeslot.assigned_timeslots.all|length timeslot.max_participants 100 %}%){% else %}∞{% endif %}</td>
           <td class="text-nowrap">{{ timeslot.checkins.all|length }} / {{ timeslot.assigned_timeslots.all|length }} ({% widthratio timeslot.checkins.all|length timeslot.assigned_timeslots.all|length 100 %}%)</td>
         </tr>
       {% empty %}

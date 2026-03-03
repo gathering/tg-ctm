@@ -104,10 +104,10 @@ def sync():
           new_crew_member.save()
           if not is_new_user: is_updated_user = True
 
-    if is_new_user: num_new_users += 1
-    elif is_updated_user: num_updated_users += 1
-  if is_new_crew: num_new_crews += 1
-  elif is_updated_crew: num_updated_crews += 1
+      if is_new_user: num_new_users += 1
+      elif is_updated_user: num_updated_users += 1
+    if is_new_crew: num_new_crews += 1
+    elif is_updated_crew: num_updated_crews += 1
 
   deleted_users = 0
   for olduser in current_syced_wannabe_users:

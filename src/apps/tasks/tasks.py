@@ -15,8 +15,8 @@ def send_reminders():
       if assigned_timeslot.reminder_status != AssignedTimeslot.ReminderStatus.SECOND and \
           assigned_timeslot.timeslot.start_time < timezone.now() + timedelta(minutes=10) and \
           assigned_timeslot.timeslot.start_time > timezone.now():
-        print("Send reminder to " + assigned_timeslot.user.username + " for task " + str(assigned_timeslot.timeslot) + " (10 minutes)")
-        success = send_message_to_user(assigned_timeslot.user, f"🔔 Ti minutter igjen til `{assigned_timeslot.timeslot}`! {assigned_timeslot.timeslot.task.reminder_info}")
+        print(f"Send reminder to {assigned_timeslot.profile} for task {assigned_timeslot.timeslot} (10 minutes)")
+        success = send_message_to_user(assigned_timeslot.profile.user, f"🔔 Ti minutter igjen til `{assigned_timeslot.timeslot}`! {assigned_timeslot.timeslot.task.reminder_info}")
         if success:
           assigned_timeslot.reminder_status = AssignedTimeslot.ReminderStatus.SECOND
           assigned_timeslot.save()
@@ -24,8 +24,8 @@ def send_reminders():
       elif assigned_timeslot.reminder_status == AssignedTimeslot.ReminderStatus.NONE and \
           assigned_timeslot.timeslot.start_time < timezone.now() + timedelta(hours=2) and \
           assigned_timeslot.timeslot.start_time > timezone.now():
-        print("Send reminder to " + assigned_timeslot.user.username + " for task " + str(assigned_timeslot.timeslot) + " (2 hours left)")
-        success = send_message_to_user(assigned_timeslot.user, f"🔔 Hei, oppgaven `{assigned_timeslot.timeslot}` starter om under to timer. {assigned_timeslot.timeslot.task.reminder_info}")
+        print(f"Send reminder to {assigned_timeslot.profile} for task {assigned_timeslot.timeslot} (2 hours left)")
+        success = send_message_to_user(assigned_timeslot.profile.user, f"🔔 Hei, oppgaven `{assigned_timeslot.timeslot}` starter om under to timer. {assigned_timeslot.timeslot.task.reminder_info}")
         if success:
           assigned_timeslot.reminder_status = AssignedTimeslot.ReminderStatus.FIRST
           assigned_timeslot.save()

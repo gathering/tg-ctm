@@ -2,7 +2,6 @@ from django.shortcuts import render, redirect
 from django.conf import settings
 import os, json
 from django.http import JsonResponse
-from django.views.decorators.cache import cache_page
 from django.urls import reverse
 from apps.tasks.models import AssignedTimeslot
 
@@ -28,7 +27,6 @@ def handler404(request, exception):
 def handler500(request):
   return render(request, 'errors/500.html', status=500)
 
-@cache_page(60 * 60 * 24 * 365 * 10) # Cache for 10 years, effectively infinite until next deploy as this is memcached
 def pwa_service_worker(request):
   with open(os.path.join(settings.BASE_DIR, settings.STATIC_ROOT, "staticfiles.json")) as static_files_raw:
     static_files = json.load(static_files_raw)
@@ -40,7 +38,6 @@ def pwa_service_worker(request):
     ]
     return render(request, 'pwa/serviceworker.js', { "files": files, "hash": static_files["hash"] }, content_type='application/javascript')
 
-@cache_page(60 * 60 * 24 * 365 * 10) # Cache for 10 years, effectively infinite until next deploy as this is memcached
 def pwa_manifest(request):
   shortcuts = [{ "name": "Hjem", "url": reverse("index") }]
   if request.user.is_authenticated:
