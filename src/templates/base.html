@@ -49,6 +49,11 @@
     </div>
   </body>
   <script>
+    function getCsrfToken() {
+      const match = document.cookie.match(/(?:^|;\s*)csrftoken=([^;]+)/);
+      return match ? decodeURIComponent(match[1]) : '';
+    }
+
     function toggleSidebar() {
       const sidebar = document.getElementById("sidebar");
       if (sidebar.classList.contains("opacity-0")) sidebar.classList.remove("hidden", "opacity-0") && sidebar.classList.add("opacity-100");
