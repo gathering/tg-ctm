@@ -21,6 +21,7 @@ dependencies = [
     "psycopg2-binary (>=2.9.11,<3.0.0)",
     "timeloop (>=1.0.2,<2.0.0)",
     "django-chartjs (>=2.3.0,<3.0.0)",
+    "django-compress-staticfiles (>=1.0.1b0,<2.0.0)",
 ]
 
 
