@@ -3,7 +3,7 @@
 {% block title %}Wannabe Sync{% endblock %}
 
 {% block head %} {% load static %}
-  <script src="{% static 'js/wannabe_sync.js' %}"></script>
+  <script src="{% static 'js/profiles/wannabe_sync.js' %}"></script>
 {% endblock %}
 
 {% block content %}
@@ -13,9 +13,7 @@
 
   <button id="sync-button" class="button button-green" onclick="syncWannabe()">Sync Wannabe</button>
 
-  <span id="loading-indicator" class="ml-4 hidden">
-    <i class="fa-solid fa-circle-notch animate-spin text-3xl"></i>
-  </span>
+  <span id="loading-indicator" class="icon-[fa7-solid--circle-notch] ml-4 animate-spin text-3xl hidden"></span>
 
   <div id="sync-stats" class="mt-4 hidden">
     <p><strong>Sync fullført!</strong></p>

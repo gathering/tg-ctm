@@ -30,32 +30,11 @@ def handler500(request):
 def pwa_service_worker(request):
   with open(os.path.join(settings.BASE_DIR, settings.STATIC_ROOT, "staticfiles.json")) as static_files_raw:
     static_files = json.load(static_files_raw)
-    files = [file for file in list(static_files["paths"].values()) if not file.startswith("fontawesomefree")] + [
-      static_files["paths"]["fontawesomefree/css/fontawesome.min.css"],
-      static_files["paths"]["fontawesomefree/css/solid.min.css"],
-      static_files["paths"]["fontawesomefree/webfonts/fa-solid-900.woff2"],
-      static_files["paths"]["fontawesomefree/webfonts/fa-solid-900.ttf"],
-    ]
+    files = [file for file in list(static_files["paths"].values())]
     return render(request, 'pwa/serviceworker.js', { "files": files, "hash": static_files["hash"] }, content_type='application/javascript')
 
 def pwa_manifest(request):
   shortcuts = [{ "name": "Hjem", "url": reverse("index") }]
-  if request.user.is_authenticated:
-    if request.user.has_perm("lost_and_found.view_lostitem"): shortcuts.append({
-      "name": "Tapte gjenstander", "url": reverse("view_lost_items")
-    })
-    if request.user.has_perm("lost_and_found.view_founditem"): shortcuts.append({
-      "name": "Funnede gjenstander", "url": reverse("view_found_items")
-    })
-    if request.user.has_perm("item_loans.view_loanableitem"): shortcuts.append({
-      "name": "Utlånslager", "url": reverse("view_loanable_items")
-    })
-    if request.user.has_perm("item_loans.view_itemloan"): shortcuts.append({
-      "name": "Utlånsliste", "url": reverse("view_item_loans")
-    })
-    if request.user.has_perm("sleeping_areas.view_sleepingarea"): shortcuts.append({
-      "name": "Soveområder", "url": reverse("view_sleeping_areas")
-    })
 
   return JsonResponse({
     "name": settings.PWA_APP_NAME,

@@ -53,7 +53,6 @@ INSTALLED_APPS = [
     # design
     "tailwind", "theme",
     "crispy_forms", "crispy_tailwind",
-    "fontawesomefree",
     "django_google_fonts",
     "chartjs",
     # authentication
@@ -139,6 +138,7 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 STATIC_ROOT = os.environ.get("STATIC_ROOT", "./static_built")
+MINIFY_STATIC = False
 
 STATICFILES_DIRS = [
   BASE_DIR / "static",

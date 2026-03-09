@@ -19,7 +19,7 @@
       {% for timeslot in timeslots|dictsort:"start_time" %}
         <tr class="[&>td]:max-w-xs {% if timeslot.start_time > now %}{% elif timeslot.end_time > now %}text-yellow-200 animate-pulse{% else %}text-green-200{% endif %}">
           <td class="text-nowrap w-0 pr-1">
-            <a href="{% url 'view_timeslot' timeslot.id %}" class="icon-button"><i class="fa-solid fa-external-link-square-alt"></i></a>
+            <a href="{% url 'view_timeslot' timeslot.id %}" class="icon-button"><span class="icon-[fa7-solid--external-link-square-alt]"></span></a>
           </td>
           <td class="text-nowrap">{{ timeslot.task.name }}</td>
           <td class="text-nowrap">{{ timeslot.start_time|date:"l j.M, \k\l H:i" }} - {{ timeslot.end_time|date:"H:i" }}</td>

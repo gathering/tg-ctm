@@ -43,10 +43,10 @@ RUN SECRET_KEY=dummy \
 
 
 # runtime nginx image
-FROM nginx:alpine AS runtime-nginx
+FROM georgjung/nginx-brotli:alpine AS runtime-nginx
 
 COPY --from=builder /app/src/static_built /var/www/html/static
-COPY ./nginx/nginx.conf /etc/nginx/conf.d/default.conf
+COPY ./nginx/nginx.conf /etc/nginx/nginx.conf
 
 
 # runtime app image

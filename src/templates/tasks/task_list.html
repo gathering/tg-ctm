@@ -23,7 +23,7 @@
       {% for task in tasks|dictsort:"name" %}
         <tr class="[&>td]:max-w-xs">
           <td class="text-nowrap w-0 pr-1">
-            <a href="{% url 'view_task' task.id %}" class="icon-button"><i class="fa-solid fa-external-link-square-alt"></i></a>
+            <a href="{% url 'view_task' task.id %}" class="icon-button"><span class="icon-[fa7-solid--external-link-square-alt]"></span></a>
           </td>
           <td class="text-nowrap">{{ task.name }}</td>
           <td class="truncate hidden lg:block">{{ task.description }}</td>

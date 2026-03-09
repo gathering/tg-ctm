@@ -617,17 +617,6 @@ honcho = ["honcho (>=2.0.0,<3)"]
 reload = ["django-browser-reload (>=1.21.0,<2)"]
 
 [[package]]
-name = "fontawesomefree"
-version = "6.6.0"
-description = "Font Awesome Free"
-optional = false
-python-versions = "*"
-groups = ["main"]
-files = [
-    {file = "fontawesomefree-6.6.0-py3-none-any.whl", hash = "sha256:599b574431c9bd92ed5fc054d1045a07c42335da36c17884f2b934755eef9089"},
-]
-
-[[package]]
 name = "gunicorn"
 version = "25.1.0"
 description = "WSGI HTTP Server for UNIX"
@@ -1114,4 +1103,4 @@ files = [
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.13,<4.0.0"
-content-hash = "dfedbc17897c86f4ec3a8e3715d39ddea873c2da87b2f5e546b7b65576deb1d5"
+content-hash = "9ca20e2004b9fe3063cb62fb57ee8ac10debc4bf8db6e461869077979012cace"

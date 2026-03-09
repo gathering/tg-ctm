@@ -1,5 +1,5 @@
 const appName = "tg-ctm"
-const staticCacheName = `${appName}-pwa-{{ hash }}`
+const staticCacheName = `${appName}-{{ hash }}`
 
 const files = [
   "/offline",

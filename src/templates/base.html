@@ -8,7 +8,7 @@
       {% if user.is_superuser %}
         <a href="/admin" class="text-gray-400 h-full my-auto">Admin</a>
       {% endif %}
-      <button id="pwa-button" onclick="showInstallPrompt();" aria-label="Installer app" class="text-green-600 h-full my-auto cursor-pointer ml-auto hidden"><i class="fa-solid fa-download"></i></button>
+      <button id="pwa-button" onclick="showInstallPrompt();" aria-label="Installer app" class="text-green-600 h-full my-auto cursor-pointer ml-auto hidden"><span class="icon-[fa7-solid--download]"></span></button>
     </header>
     <div class="flex flex-row flex-1 overflow-hidden pwa:flex-col">
       <div id="sidebar" class="bg-background-secondary w-48 hidden opacity-0 md:flex md:opacity-100 md:flex-col transition-opacity pwa:fixed pwa:bottom-0 pwa:left-0 pwa:right-0 pwa:w-full pwa:h-auto pwa:flex pwa:opacity-100 pwa:flex-row pwa:z-50">
@@ -16,21 +16,21 @@
           <li class="web-only"><a href="{% url "index" %}">Hjem</a></li>
           {% if perms.tasks.view_task %}
             <li><a href="{% url "view_tasks" %}" class="flex flex-col pwa:items-center pwa:gap-1">
-              <span class="pwa-only"><i class="fa-solid fa-list-check"></i></span>
+              <span class="pwa-only icon-[fa7-solid--list-check] text-2xl"></span>
               <span class="pwa-only text-neutral-400">Oppgaver</span>
               <span class="web-only">Oppgaver</span>
             </a></li>
           {% endif %}
           {% if perms.tasks.view_timeslot %}
             <li><a href="{% url "view_timeslots" %}" class="flex flex-col pwa:items-center pwa:gap-1">
-              <span class="pwa-only"><i class="fa-solid fa-business-time"></i></span>
+              <span class="pwa-only icon-[fa7-solid--business-time] text-2xl"></span>
               <span class="pwa-only text-neutral-400">Tidsrom</span>
               <span class="web-only">Tidsrom</span>
             </a></li>
           {% endif %}
           {% if user.is_superuser %}
             <li><a href="{% url "wannabe_sync" %}" class="flex flex-col pwa:items-center pwa:gap-1">
-              <span class="pwa-only"><i class="fa-solid fa-rotate"></i></span>
+              <span class="pwa-only icon-[fa7-solid--rotate] text-2xl"></span>
               <span class="pwa-only text-neutral-400">Synk</span>
               <span class="web-only">Synk. Wannabe</span>
             </a></li>

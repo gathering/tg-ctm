@@ -1,9 +1,12 @@
 @import "tailwindcss";
+@plugin "@iconify/tailwind4";
 @source "../../../**/*.{html,py,js}";
 @plugin "@tailwindcss/aspect-ratio";
 @plugin "@tailwindcss/forms";
 @plugin "@tailwindcss/typography";
 @config "./tailwind.config.js";
+
+@import "../../../static/fonts/notocoloremoji:wght@400.css";
 
 /* Colors and fonts */
 @theme {
