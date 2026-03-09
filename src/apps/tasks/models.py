@@ -23,6 +23,10 @@ class Timeslot(models.Model):
   # extra properties: assigned_profiles, checkins
 
   @property
+  def duration(self):
+    return self.end_time - self.start_time
+
+  @property
   def extra_checkins(self):
     return self.checkins.filter(extra=True)
 

@@ -247,4 +247,5 @@ def new_timeslot(request, task_id):
       end_time=request.POST.get("end_time")
     )
     return redirect(reverse("view_timeslot", args=[timeslot.id]))
-  return render(request, 'tasks/timeslots/timeslot_new.html', { "task": task })
+  last_timeslot = Timeslot.objects.filter(task=task).order_by("-start_time").first()
+  return render(request, 'tasks/timeslots/timeslot_new.html', { "task": task, "last_duration": last_timeslot.duration.total_seconds() if last_timeslot else None })

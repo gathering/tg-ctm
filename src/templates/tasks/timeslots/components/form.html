@@ -3,7 +3,7 @@
   <div>
     <div>
       <label for="start_time">Startdato*</label>
-      <input type="datetime-local" name="start_time" value="{{ timeslot.start_time|date:'Y-m-d\TH:i'|default_if_none:'' }}" required autofocus>
+      <input type="datetime-local" id="start_time" name="start_time" value="{{ timeslot.start_time|date:'Y-m-d\TH:i'|default_if_none:'' }}" required autofocus>
     </div>
     <div>
       <label for="end_time">Sluttdato*</label>
@@ -16,3 +16,37 @@
     <input type="submit" value="Lagre">
   </div>
 </form>
+
+<script>
+  const form = document.querySelector("form");
+  const startTimeInput = document.querySelector("#start_time");
+  const endTimeInput = document.querySelector("#end_time");
+
+  form.addEventListener("submit", (event) => {
+    event.preventDefault();
+
+    const startTime = new Date(startTimeInput.value);
+    const endTime = new Date(endTimeInput.value);
+
+    if (endTime <= startTime) {
+      alert("Sluttid må være etter starttid.");
+      return;
+    }
+
+    form.submit();
+  });
+
+  const pad = num => num.toString().padStart(2, "0");
+
+  let duration = parseInt("{% firstof timeslot.duration last_duration 1800 %}", 10);
+  startTimeInput.addEventListener("change", () => {
+    const startTime = new Date(startTimeInput.value);
+    const newEndTime = new Date(startTime.getTime() + duration * 1000);
+    if (newEndTime) endTimeInput.value = `${newEndTime.getFullYear()}-${pad(newEndTime.getMonth() + 1)}-${pad(newEndTime.getDate())}T${pad(newEndTime.getHours())}:${pad(newEndTime.getMinutes())}`;
+  });
+  endTimeInput.addEventListener("change", () => {
+    const startTime = new Date(startTimeInput.value);
+    const endTime = new Date(endTimeInput.value);
+    if (startTime && endTime) duration = (endTime - startTime) / 1000;
+  });
+</script>
