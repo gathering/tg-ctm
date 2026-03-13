@@ -1,7 +1,4 @@
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="./tgctm/static/ctm-white.png">
-  <img alt="ctm logo" src="./tgctm/static/ctm.png" height="100">
-</picture>
+# !!! This project is no longer maintained
 
 # TG-CTM
 
